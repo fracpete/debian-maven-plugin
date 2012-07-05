@@ -1,0 +1,10 @@
+<project name="${project.artifactId}">
+	<body>
+		<menu name="Overview">
+			<item name="Introduction" href="index.html"/>
+			<item name="Goals" href="goals.html"/>
+			<item name="Usage" href="usage.html"/>
+			<item name="Contact" href="contact.html"/>
+		</menu>
+	</body>
+</project>

@@ -1,0 +1,23 @@
+	---------
+	Goals
+	---------
+
+Goals
+
+	[deb:package] Generate a Debian package.
+
+	[deb:check] Check the package using Lintian.
+
+	[deb:install] Install the package using dpkg.
+
+	[deb:clean] Cleanup all generated files.
+
+	[]
+
+System Requirements
+
+*---------+----------+
+| Maven   | 2.x.x    |
+*---------+----------+
+| JDK     | 1.5      |
+*---------+----------+

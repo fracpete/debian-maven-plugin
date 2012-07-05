@@ -1,0 +1,71 @@
+	---------------
+	Usage
+	---------------
+
+Usage
+
+* Plugin configuration
+
+	You should specify the version in your project's plugin configuration:
+
++---------------------
+<project>
+  ...
+  <build>
+    <!-- To use the plugin goals, add the following in your POM or parent POM -->
+    <plugins>
+      <plugin>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>${project.artifactId}</artifactId>
+        <version>${project.version}</version>
+	<configuration>
+		<!--
+		<packageName>my-package</packageName>
+		<packageVersion>1.0.0</packageVersion>
+		...
+		-->
+	</configuration>
+      </plugin>
+      ...
+    </plugins>
+  </build>
+  ...
+</project>
++---------------------
+
+	The plugin accepts the following configuration parameters (most of them have reasonable default values):
+
+*------------------*-----------------------*------------------------*-----------*------------------------*
+| <<POM setting>>  | <<Command line argument>> | <<Description>>        | <<Data type>> | <<Default value>>
+*------------------+-----------------------+------------------------+-----------+------------------------+
+  packageName      | deb.package.name          | Package name           | String        | \$\{project.artifactId\}
+*------------------+-----------------------+------------------------+-----------+------------------------+
+  packageVersion   | deb.package.version       | Package version        | String        | \$\{project.version\}
+*------------------+-----------------------+------------------------+-----------+------------------------+
+  packageRevision  | deb.package.revision      | Package revision       | String        | 1
+*------------------+-----------------------+------------------------+-----------+------------------------+
+  packagePriority  | deb.package.priority      | Installation priority  | String        | optional
+*------------------+-----------------------+------------------------+-----------+------------------------+
+  packageSection   | deb.package.section       | Repository section     | String        | contrib/utils
+*------------------+-----------------------+------------------------+-----------+------------------------+
+  packageTitle     | deb.package.title         | Short package description | String     | \$\{project.name\}
+*------------------+-----------------------+------------------------+-----------+------------------------+
+  packageDescription | deb.package.description | Extended package description | String  | \$\{project.description\}
+*------------------+-----------------------+------------------------+-----------+------------------------+
+  packageDepends   | deb.package.depends       | Dependencies to other packages | String |
+*------------------+-----------------------+------------------------+-----------+------------------------+
+  projectUrl       | deb.project.url           | Project website        | String        | \$\{project.organization.url\}
+*------------------+-----------------------+------------------------+-----------+------------------------+
+  projectOrganization | deb.project.organization | Organization for Debian control file | String | \$\{project.organization.name\}
+*------------------+-----------------------+------------------------+-----------+------------------------+
+  maintainerName   | deb.maintatier.name       | Package maintainer's name | String     | \$\{project.developers\[0\].name\}
+*------------------+-----------------------+------------------------+-----------+------------------------+
+  maintainerEmail   | deb.maintatier.email     | Package maintainer's email address | String | \$\{project.developers\[0\].email\}
+*------------------+-----------------------+------------------------+-----------+------------------------+
+  jars             |                           | JAR files to be included | String\[\]  | \$\{project.artifactId\}-\$\{project.version\}.jar
+*------------------+-----------------------+------------------------+-----------+------------------------+
+
+* Adding package content
+
+	The files in <<<src/deb/resources>>> are copied directly into the root of
+your Debian package.

@@ -5,27 +5,14 @@
 	<artifactId>debian-maven-plugin</artifactId>
 	<version>0.9-SNAPSHOT</version>
 	<packaging>maven-plugin</packaging>
-	<name>Debian package creation plugin</name>
+	<name>Debian Maven Plugin</name>
+	<description>
+		This plugin helps building Debian packages from Maven projects.
+	</description>
 	<properties>
-		<maven.compiler.source>1.6</maven.compiler.source>
-		<maven.compiler.target>1.6</maven.compiler.target>
+		<maven.compiler.source>1.5</maven.compiler.source>
+		<maven.compiler.target>1.5</maven.compiler.target>
 	</properties>
-	<reporting>
-		<plugins>
-			<plugin>
-				<artifactId>maven-project-info-reports-plugin</artifactId>
-				<version>2.1</version>
-				<reportSets>
-					<reportSet>
-						<reports>
-							<report>index</report>
-							<report>dependencies</report>
-						</reports>
-					</reportSet>
-				</reportSets>
-			</plugin>
-		</plugins>
-	</reporting>
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.maven</groupId>
