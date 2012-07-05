@@ -69,3 +69,9 @@ Usage
 
 	The files in <<<src/deb/resources>>> are copied directly into the root of
 your Debian package.
+
+	The JARs mentioned in the <<<jars>>> configuration argument are added to
+the Debian package in the directory <<</usr/share/lib/\$\{packageName\}/>>>. If
+there is no <<<jars>>> argument, the JAR name will be guessed. If a JAR contains
+the project version number, a symbolic link without the version number will be
+added.
