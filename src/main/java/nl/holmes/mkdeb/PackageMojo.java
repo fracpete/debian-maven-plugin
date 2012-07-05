@@ -93,7 +93,8 @@ public class PackageMojo extends AbstractDebianMojo
 		for (String jarname : allJars)
 		{
 			File srcFile = new File(targetDir, jarname);
-			File targetFile = new File(targetLibDir, srcFile.getName());
+			String basename = srcFile.getName();
+			File targetFile = new File(targetLibDir, basename);
 			
 			FileInputStream is = new FileInputStream(srcFile);
 			FileOutputStream os = new FileOutputStream(targetFile);
@@ -103,10 +104,14 @@ public class PackageMojo extends AbstractDebianMojo
 			is.close();
 			os.close();
 			
-			File symlink = new File(targetLibDir, stripVersion(targetFile.getName().toString()));
-			if (symlink.exists())
-				symlink.delete();
-			runProcess(new String[]{"ln", "-s", srcFile.getName(), symlink.toString()}, true);
+			String strippedname = stripVersion(basename);
+			if (!basename.equals(strippedname))
+			{
+				File symlink = new File(targetLibDir, strippedname);
+				if (symlink.exists())
+					symlink.delete();
+				runProcess(new String[]{"ln", "-s", basename, symlink.toString()}, true);
+			}
 		}
 	}
 
