@@ -55,7 +55,7 @@ public class PackageMojo extends AbstractDebianMojo
 	
 	private String getStrippedBasename(final String filename)
 	{
-		int idx = filename.indexOf(package_version);
+		int idx = filename.indexOf(packageVersion);
 		if (idx < 2)
 			return filename;
 		
@@ -87,7 +87,7 @@ public class PackageMojo extends AbstractDebianMojo
 		else if (defaultJar != null)
 			allJars.add(defaultJar);
 
-		File targetLibDir = new File(stageDir, "usr/share/lib/" + package_name);
+		File targetLibDir = new File(stageDir, "usr/share/lib/" + packageName);
 		targetLibDir.mkdirs();
 
 		for (String jarname : allJars)
@@ -112,14 +112,14 @@ public class PackageMojo extends AbstractDebianMojo
 
 	private void generateCopyright() throws IOException
 	{
-		File targetDocDir = new File(stageDir, "usr/share/doc/" + package_name);
+		File targetDocDir = new File(stageDir, "usr/share/doc/" + packageName);
 		targetDocDir.mkdirs();
 
 		PrintWriter out = new PrintWriter(new FileWriter(new File(targetDocDir, "copyright")));
-		out.println(package_name);
-		out.println(project_url);
+		out.println(packageName);
+		out.println(projectUrl);
 		out.println();
-		out.printf("Copyright %d %s\n", Calendar.getInstance().get(Calendar.YEAR), project_organization);
+		out.printf("Copyright %d %s\n", Calendar.getInstance().get(Calendar.YEAR), projectOrganization);
 		out.println();
 		out.println("The entire code base may be distributed under the terms of the GNU General");
 		out.println("Public License (GPL).");
@@ -133,23 +133,23 @@ public class PackageMojo extends AbstractDebianMojo
 		getLog().info("Generating control file: "+target);
 		PrintWriter out = new PrintWriter(new FileWriter(target));
 
-		out.println("Package: "+package_name);
-		out.println("Version: "+package_version);
-		out.println("Section: "+package_section);
-		out.println("Priority: "+package_priority);
-		out.println("Architecture: "+package_architecture);
-		if (package_depends != null)
-			out.println("Depends: "+package_depends);
-		out.printf("Maintainer: %s <%s>\n", maintainer_name, maintainer_email);
-		out.println("Homepage: "+project_url);
-		out.println("Description: "+package_title);
+		out.println("Package: "+packageName);
+		out.println("Version: "+packageVersion);
+		out.println("Section: "+packageSection);
+		out.println("Priority: "+packagePriority);
+		out.println("Architecture: "+packageArchitecture);
+		if (packageDepends != null)
+			out.println("Depends: "+packageDepends);
+		out.printf("Maintainer: %s <%s>\n", maintainerName, maintainerEmail);
+		out.println("Homepage: "+projectUrl);
+		out.println("Description: "+packageTitle);
 		out.println(getFormattedDescription());
 		out.close();
 	}
 	
 	private String getFormattedDescription()
 	{
-		String desc = package_description.trim();
+		String desc = packageDescription.trim();
 		desc.replaceAll("\\s+", " ");
 		
 		return " " + desc;

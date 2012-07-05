@@ -14,67 +14,67 @@ public abstract class AbstractDebianMojo extends AbstractMojo
 	/**
 	 * @parameter expression="${deb.package.name}" default-value="${project.artifactId}"
 	 */
-	protected String package_name;
+	protected String packageName;
 
 	/**
 	 * @parameter expression="${deb.package.version}" default-value="${project.version}"
 	 */
-	protected String package_version;
+	protected String packageVersion;
 
 	/**
 	 * @parameter expression="${deb.package.revision}" default-value="1"
 	 */
-	protected String package_revision;
+	protected String packageRevision;
 
 	/**
 	 * @parameter expression="${deb.package.priority}" default-value="optional"
 	 */
-	protected String package_priority;
+	protected String packagePriority;
 
 	/**
 	 * @parameter expression="${deb.package.section}" default-value="contrib/utils"
 	 */
-	protected String package_section;
+	protected String packageSection;
 
 	/**
 	 * @parameter expression="${deb.package.title}" default-value="${project.name}"
 	 */
-	protected String package_title;
+	protected String packageTitle;
 
 	/**
 	 * @parameter expression="${deb.package.description}" default-value="${project.description}"
 	 */
-	protected String package_description;
+	protected String packageDescription;
 
 	/**
 	 * @parameter expression="${deb.package.architecture}" default-value="all"
 	 */
-	protected String package_architecture;
+	protected String packageArchitecture;
 
 	/**
 	 * @parameter expression="${deb.package.depends}" default-value=""
 	 */
-	protected String package_depends;
+	protected String packageDepends;
 
 	/**
 	 * @parameter expression="${deb.project.url}" default-value="${project.organization.url}"
 	 */
-	protected String project_url;
+	protected String projectUrl;
 
 	/**
 	 * @parameter expression="${deb.project.organization}" default-value="${project.organization.name}"
 	 */
-	protected String project_organization;
+	protected String projectOrganization;
 
 	/**
 	 * @parameter expression="${deb.maintainer.name}" default-value="${project.developers[0].name}"
 	 */
-	protected String maintainer_name;
+	protected String maintainerName;
 
 	/**
 	 * @parameter expression="${deb.maintainer.email}" default-value="${project.developers[0].email}"
 	 */
-	protected String maintainer_email;
+	protected String maintainerEmail;
 
 	/**
 	 * @parameter default-value="${project.artifactId}-${project.version}.jar"
@@ -92,7 +92,7 @@ public abstract class AbstractDebianMojo extends AbstractMojo
 
 	protected File getPackageFile()
 	{
-		return new File(targetDir, String.format("%s_%s-%s_all.deb", package_name, package_version, package_revision));
+		return new File(targetDir, String.format("%s_%s-%s_all.deb", packageName, packageVersion, packageRevision));
 	}
 	
 	private int runProcess(Process p) throws IOException
