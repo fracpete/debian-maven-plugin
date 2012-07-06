@@ -68,6 +68,12 @@ Usage
 *------------------+-----------------------+------------------------+-----------+------------------------+
   excludeAllJars   | deb.exclude.all-jars      | If true, no JARs are included | Boolean | false
 *------------------+-----------------------+------------------------+-----------+------------------------+
+  repositoryLocation | deb.repository.location | Location of the Debian repository | File |
+*------------------+-----------------------+------------------------+-----------+------------------------+
+  repositoryBranch | deb.repository.branch     | The codename of the distribution branch | String | experimental
+*------------------+-----------------------+------------------------+-----------+------------------------+
+  repreproConfigurotionDir | deb.reprepro.config | Reprepro configuration directory | File |
+*------------------+-----------------------+------------------------+-----------+------------------------+
 
 * Adding package content
 

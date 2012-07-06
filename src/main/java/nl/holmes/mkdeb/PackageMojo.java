@@ -29,6 +29,56 @@ import org.apache.maven.plugin.logging.Log;
  */
 public class PackageMojo extends AbstractDebianMojo
 {
+	/**
+	 * @parameter expression="${deb.package.priority}" default-value="optional"
+	 */
+	protected String packagePriority;
+
+	/**
+	 * @parameter expression="${deb.package.section}" default-value="contrib/utils"
+	 */
+	protected String packageSection;
+
+	/**
+	 * @parameter expression="${deb.package.title}" default-value="${project.name}"
+	 */
+	protected String packageTitle;
+
+	/**
+	 * @parameter expression="${deb.package.description}" default-value="${project.description}"
+	 */
+	protected String packageDescription;
+
+	/**
+	 * @parameter
+	 */
+	protected String[] packageDependencies;
+
+	/**
+	 * @parameter expression="${deb.project.url}" default-value="${project.organization.url}"
+	 */
+	protected String projectUrl;
+
+	/**
+	 * @parameter expression="${deb.project.organization}" default-value="${project.organization.name}"
+	 */
+	protected String projectOrganization;
+
+	/**
+	 * @parameter expression="${deb.include.jar}" default-value="${project.artifactId}-${project.version}.jar"
+	 */
+	protected String includeJar;
+
+	/**
+	 * @parameter
+	 */
+	protected String[] includeJars;
+
+	/**
+	 * @parameter expression="${deb.exclude.all-jars}" default-value="false"
+	 */
+	protected boolean excludeAllJars;
+
 	private static void copyTree(File sourceDir, File targetDir, Log log)
 			throws IOException
 	{

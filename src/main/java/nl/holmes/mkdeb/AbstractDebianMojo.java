@@ -27,44 +27,9 @@ public abstract class AbstractDebianMojo extends AbstractMojo
 	protected String packageRevision;
 
 	/**
-	 * @parameter expression="${deb.package.priority}" default-value="optional"
-	 */
-	protected String packagePriority;
-
-	/**
-	 * @parameter expression="${deb.package.section}" default-value="contrib/utils"
-	 */
-	protected String packageSection;
-
-	/**
-	 * @parameter expression="${deb.package.title}" default-value="${project.name}"
-	 */
-	protected String packageTitle;
-
-	/**
-	 * @parameter expression="${deb.package.description}" default-value="${project.description}"
-	 */
-	protected String packageDescription;
-
-	/**
 	 * @parameter expression="${deb.package.architecture}" default-value="all"
 	 */
 	protected String packageArchitecture;
-
-	/**
-	 * @parameter
-	 */
-	protected String[] packageDependencies;
-
-	/**
-	 * @parameter expression="${deb.project.url}" default-value="${project.organization.url}"
-	 */
-	protected String projectUrl;
-
-	/**
-	 * @parameter expression="${deb.project.organization}" default-value="${project.organization.name}"
-	 */
-	protected String projectOrganization;
 
 	/**
 	 * @parameter expression="${deb.maintainer.name}" default-value="${project.developers[0].name}"
@@ -75,21 +40,6 @@ public abstract class AbstractDebianMojo extends AbstractMojo
 	 * @parameter expression="${deb.maintainer.email}" default-value="${project.developers[0].email}"
 	 */
 	protected String maintainerEmail;
-
-	/**
-	 * @parameter expression="${deb.include.jar}" default-value="${project.artifactId}-${project.version}.jar"
-	 */
-	protected String includeJar;
-
-	/**
-	 * @parameter
-	 */
-	protected String[] includeJars;
-
-	/**
-	 * @parameter expression="${deb.exclude.all-jars}" default-value="false"
-	 */
-	protected boolean excludeAllJars;
 
 	protected File sourceDir = new File("src/deb/resources");
 	protected File targetDir = new File("target");

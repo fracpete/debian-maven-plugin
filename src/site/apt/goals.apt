@@ -12,6 +12,8 @@ Goals
 
 	[deb:clean] Cleanup all generated files.
 
+	[deb:reprepro-install] Install the package into a Debian repository using reprepro.
+
 	[]
 
 System Requirements
@@ -21,3 +23,13 @@ System Requirements
 *---------+----------+
 | JDK     | 1.5      |
 *---------+----------+
+
+Debian package management tools:
+
+	* dpkg-deb
+
+	* fakeroot
+
+	* reprepro (optional)
+
+	[]
