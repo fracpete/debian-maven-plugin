@@ -185,19 +185,26 @@ public class PackageMojo extends AbstractDebianMojo
 	
 	private void generateConffiles(File target) throws IOException
 	{
-		PrintWriter out = new PrintWriter(new FileWriter(target));
+		List<String> conffiles = new Vector<String>();
 
-		Collection<File> files = FileUtils.listFiles(new File(stageDir, "etc"), null, true);
-		for (File f : files)
+		File configDir = new File(stageDir, "etc");
+		if (configDir.exists())
 		{
-			if (f.isFile())
+			Collection<File> files = FileUtils.listFiles(configDir, null, true);
+			for (File f : files)
 			{
-				String fname = f.toString().substring(stageDir.toString().length());
-				out.println(fname);
+				if (f.isFile())
+					conffiles.add(f.toString().substring(stageDir.toString().length()));
 			}
 		}
 
-		out.close();
+		if (conffiles.size() > 0)
+		{
+			PrintWriter out = new PrintWriter(new FileWriter(target));
+			for (String fname : conffiles)
+				out.println(fname);
+			out.close();
+		}
 	}
 
 	private void generateMd5Sums(File target) throws IOException
