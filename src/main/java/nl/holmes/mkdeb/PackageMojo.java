@@ -15,6 +15,7 @@ import java.util.Vector;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 
@@ -145,15 +146,29 @@ public class PackageMojo extends AbstractDebianMojo
 
 		out.println("Package: "+packageName);
 		out.println("Version: "+packageVersion);
-		out.println("Section: "+packageSection);
-		out.println("Priority: "+packagePriority);
+
+		if (packageSection != null)
+			out.println("Section: "+packageSection);
+		if (packagePriority != null)
+			out.println("Priority: "+packagePriority);
 		out.println("Architecture: "+packageArchitecture);
-		if (packageDepends != null)
-			out.println("Depends: "+packageDepends);
+		if (packageDependencies != null && packageDependencies.length > 0)
+			out.println("Depends: " + StringUtils.join(packageDependencies, ", "));
+
+		out.printf("Installed-Size: %d\n", 1 + FileUtils.sizeOfDirectory(stageDir) / 1024);
+
 		out.printf("Maintainer: %s <%s>\n", maintainerName, maintainerEmail);
-		out.println("Homepage: "+projectUrl);
-		out.println("Description: "+packageTitle);
+		if (projectUrl != null)
+			out.println("Homepage: "+projectUrl);
+
+		if (packageTitle != null) {
+			if (packageTitle.length() > 60)
+				getLog().warn("Package title is longer than the upper limit of 60 characters.");
+			out.println("Description: "+packageTitle);
+		}
+
 		out.println(getFormattedDescription());
+
 		out.close();
 	}
 	

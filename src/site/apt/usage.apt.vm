@@ -52,7 +52,7 @@ Usage
 *------------------+-----------------------+------------------------+-----------+------------------------+
   packageDescription | deb.package.description | Extended package description | String  | \$\{project.description\}
 *------------------+-----------------------+------------------------+-----------+------------------------+
-  packageDepends   | deb.package.depends       | Dependencies to other packages | String |
+  packageDependencies |                        | Dependencies to other packages | String\[\] |
 *------------------+-----------------------+------------------------+-----------+------------------------+
   projectUrl       | deb.project.url           | Project website        | String        | \$\{project.organization.url\}
 *------------------+-----------------------+------------------------+-----------+------------------------+

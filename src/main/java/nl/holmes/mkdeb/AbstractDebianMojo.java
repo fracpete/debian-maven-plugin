@@ -52,9 +52,9 @@ public abstract class AbstractDebianMojo extends AbstractMojo
 	protected String packageArchitecture;
 
 	/**
-	 * @parameter expression="${deb.package.depends}" default-value=""
+	 * @parameter
 	 */
-	protected String packageDepends;
+	protected String[] packageDependencies;
 
 	/**
 	 * @parameter expression="${deb.project.url}" default-value="${project.organization.url}"
