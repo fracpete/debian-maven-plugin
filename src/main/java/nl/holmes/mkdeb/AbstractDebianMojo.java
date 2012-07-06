@@ -87,9 +87,9 @@ public abstract class AbstractDebianMojo extends AbstractMojo
 	protected String[] includeJars;
 
 	/**
-	 * @parameter default-value="false"
+	 * @parameter expression="${deb.exclude.all-jars}" default-value="false"
 	 */
-	protected boolean excludeJar;
+	protected boolean excludeAllJars;
 
 	protected File sourceDir = new File("src/deb/resources");
 	protected File targetDir = new File("target");
