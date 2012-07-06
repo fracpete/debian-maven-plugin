@@ -67,11 +67,107 @@ Usage
 
 * Adding package content
 
-	The files in <<<src/deb/resources>>> are copied directly into the root of
-your Debian package.
+** Adding JARs
 
 	The JARs mentioned in the <<<jars>>> configuration argument are added to
-the Debian package in the directory <<</usr/share/lib/\$\{packageName\}/>>>. If
+the Debian package in the directory <<</usr/share/lib/$\{packageName\}/>>>. If
 there is no <<<jars>>> argument, the JAR name will be guessed. If a JAR contains
 the project version number, a symbolic link without the version number will be
 added.
+
+** Adding other files
+
+	The plugin does not take care of files other than JARs.
+However, it can be used in conjunction with other plugins to take care of that.
+The stage directory for the Debian package is <<<target/deb>>>, so any files
+copied into that directory during the build process are included in the Debian package.
+
+	I recommend the Maven Resources Plugin to copy resources into the stage
+directory. The following is an example configuration.
+
++----------------------------
+<build>
+  <plugins>
+    ...
+
+    <plugin>
+      <!--
+        This plugin's configuration must come *before* the Debian Maven
+        Plugin.
+      -->
+      <artifactId>maven-resources-plugin</artifactId>
+      <version>2.3</version>
+      <executions>
+        <execution>
+          <id>copy-deb-resources</id>
+          <phase>process-resources</phase>
+          <goals><goal>copy-resources</goal></goals>
+          <configuration>
+            <overwrite>true</overwrite>
+            <outputDirectory>${basedir}/target/deb</outputDirectory>
+            <resources>
+              <resource>
+                <directory>src/deb/resources</directory>
+		<!-- Uncomment the following line to enable Velocity filtering. -->
+		<!--
+                <filtering>true</filtering>
+		-->
+              </resource>
+            </resources>
+          </configuration>
+        </execution>
+      </executions>
+    </plugin>
+
+    ...
+  </plugins>
+</build>
++----------------------------
+
+	<<IMPORTANT:>> plugins in the same phase run in the order in which they
+are mentioned in the POM. This means that the Maven Resources Plugin must be
+included <<above>> the Debian Maven Plugin!
+
+	Unfortunately, the Maven Resources Plugin does not retain Unix file
+permissions, meaning that all executable files lose their execution permission
+after copying. A workaround is to use the Maven Antrun Plugin to re-enable
+execution of all relevant files. An example configuration to do so is the
+following:
+
++----------------------------
+<build>
+  <plugins>
+    ...
+
+    <plugin>
+      <!--
+        This plugin's configuration must come *after* the Maven Resources
+        Plugin, and *before* the Debian Maven Plugin.
+      -->
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-antrun-plugin</artifactId>
+      <version>1.6</version>
+      <executions>
+        <execution>
+          <id>fix-permissions</id>
+          <phase>package</phase>
+          <configuration>
+            <target>
+              <chmod perm="ugo+x">
+                <fileset dir="${basedir}/target/deb">
+                  <include name="**/bin/**"/>
+                  <include name="DEBIAN/post*"/>
+                  <include name="DEBIAN/pre*"/>
+                </fileset>
+              </chmod>
+            </target>
+          </configuration>
+          <goals><goal>run</goal></goals>
+        </execution>
+      </executions>
+    </plugin>
+
+    ...
+  </plugins>
+</build>
++----------------------------

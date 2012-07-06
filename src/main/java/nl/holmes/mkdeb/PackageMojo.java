@@ -222,7 +222,7 @@ public class PackageMojo extends AbstractDebianMojo
 
 		try
 		{
-			copyTree(sourceDir, stageDir, getLog());
+			//copyTree(sourceDir, stageDir, getLog());
 			copyJars();
 			generateCopyright();
 			generateControl(new File(targetDebDir, "control"));
