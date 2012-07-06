@@ -5,6 +5,10 @@ import java.io.IOException;
 import org.apache.maven.plugin.MojoExecutionException;
 
 /**
+ * Installs the generated Debian package in the current system.
+ *
+ * Uses external utilities: <a href="http://www.debian.org/doc/manuals/debian-faq/ch-pkgtools.en.html">dpkg</a> and sudo.
+ *
  * @goal install
  */
 public class InstallMojo extends AbstractDebianMojo

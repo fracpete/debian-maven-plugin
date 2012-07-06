@@ -19,7 +19,12 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 
 /**
+ * Generates a Debian package.
+ *
+ * Uses Debian utilities: <a href="http://www.debian.org/doc/manuals/debian-faq/ch-pkgtools.en.html">dpkg-deb</a> and fakeroot.
+ *
  * @goal package
+ * @phase package
  */
 public class PackageMojo extends AbstractDebianMojo
 {

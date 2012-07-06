@@ -5,7 +5,12 @@ import java.io.IOException;
 import org.apache.maven.plugin.MojoExecutionException;
 
 /**
+ * Checks whether the generated package complies to style rules.
+ *
+ * Uses external utility: <a href="http://lintian.debian.org/">lintian</a>.
+ *
  * @goal check
+ * @phase package
  */
 public class CheckMojo extends AbstractDebianMojo
 {

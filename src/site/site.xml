@@ -6,5 +6,6 @@
 			<item name="Usage" href="usage.html"/>
 			<item name="Contact" href="contact.html"/>
 		</menu>
+		<menu ref="reports"/>
 	</body>
 </project>
