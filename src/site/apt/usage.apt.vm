@@ -60,9 +60,13 @@ Usage
 *------------------+-----------------------+------------------------+-----------+------------------------+
   maintainerName   | deb.maintatier.name       | Package maintainer's name | String     | \$\{project.developers\[0\].name\}
 *------------------+-----------------------+------------------------+-----------+------------------------+
-  maintainerEmail   | deb.maintatier.email     | Package maintainer's email address | String | \$\{project.developers\[0\].email\}
+  maintainerEmail  | deb.maintatier.email      | Package maintainer's email address | String | \$\{project.developers\[0\].email\}
 *------------------+-----------------------+------------------------+-----------+------------------------+
-  jars             |                           | JAR files to be included | String\[\]  | \$\{project.artifactId\}-\$\{project.version\}.jar
+  includeJar       | deb.include.jar           | JAR file to be included (ignored if includeJars is provided) | String  | \$\{project.artifactId\}-\$\{project.version\}.jar
+*------------------+-----------------------+------------------------+-----------+------------------------+
+  includeJars      |                           | JAR files to be included | String\[\]  |
+*------------------+-----------------------+------------------------+-----------+------------------------+
+  excludeAllJars   | deb.exclude.all-jars      | If true, no JARs are included | Boolean | false
 *------------------+-----------------------+------------------------+-----------+------------------------+
 
 * Adding package content

@@ -87,11 +87,14 @@ public class PackageMojo extends AbstractDebianMojo
 
 	private void copyJars() throws IOException, MojoExecutionException
 	{
+		if (excludeAllJars)
+			return;
+		
 		List<String> allJars = new Vector<String>();
-		if (jars != null)
-			allJars.addAll(Arrays.asList(jars));
-		else if (defaultJar != null)
-			allJars.add(defaultJar);
+		if (includeJars != null)
+			allJars.addAll(Arrays.asList(includeJars));
+		else if (includeJar != null)
+			allJars.add(includeJar);
 
 		File targetLibDir = new File(stageDir, "usr/share/lib/" + packageName);
 		targetLibDir.mkdirs();

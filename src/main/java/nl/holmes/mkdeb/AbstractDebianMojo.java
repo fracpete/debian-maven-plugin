@@ -77,14 +77,19 @@ public abstract class AbstractDebianMojo extends AbstractMojo
 	protected String maintainerEmail;
 
 	/**
-	 * @parameter default-value="${project.artifactId}-${project.version}.jar"
+	 * @parameter expression="${deb.include.jar}" default-value="${project.artifactId}-${project.version}.jar"
 	 */
-	protected String defaultJar;
+	protected String includeJar;
 
 	/**
 	 * @parameter
 	 */
-	protected String[] jars;
+	protected String[] includeJars;
+
+	/**
+	 * @parameter default-value="false"
+	 */
+	protected boolean excludeJar;
 
 	protected File sourceDir = new File("src/deb/resources");
 	protected File targetDir = new File("target");
