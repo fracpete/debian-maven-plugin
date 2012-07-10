@@ -41,9 +41,11 @@ public abstract class AbstractDebianMojo extends AbstractMojo
 	 */
 	protected String maintainerEmail;
 
-	protected File sourceDir = new File("src/deb/resources");
-	protected File targetDir = new File("target");
-	protected File stageDir = new File(targetDir, "deb");
+	/** @parameter default-value="${basedir}/target" */
+	protected File targetDir;
+
+	/** @parameter default-value="${targetDir}/deb" */
+	protected File stageDir;
 
 	protected File getPackageFile()
 	{

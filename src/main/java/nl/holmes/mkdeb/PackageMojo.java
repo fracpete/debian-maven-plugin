@@ -151,7 +151,7 @@ public class PackageMojo extends AbstractDebianMojo
 
 		for (String jarname : allJars)
 		{
-			File srcFile = new File(targetDir, jarname);
+			File srcFile = jarname.startsWith("/") ? new File(jarname) : new File(targetDir, jarname);
 			String basename = srcFile.getName();
 			File targetFile = new File(targetLibDir, basename);
 			
