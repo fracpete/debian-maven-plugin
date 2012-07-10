@@ -44,7 +44,7 @@ public abstract class AbstractDebianMojo extends AbstractMojo
 	/** @parameter default-value="${basedir}/target" */
 	protected File targetDir;
 
-	/** @parameter default-value="${targetDir}/deb" */
+	/** @parameter default-value="${basedir}/target/deb" */
 	protected File stageDir;
 
 	protected File getPackageFile()
