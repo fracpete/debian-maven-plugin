@@ -166,6 +166,7 @@ following:
               <chmod perm="ugo+x">
                 <fileset dir="${basedir}/target/deb">
                   <include name="**/bin/**"/>
+                  <include name="**/sbin/**"/>
                   <include name="DEBIAN/post*"/>
                   <include name="DEBIAN/pre*"/>
                 </fileset>

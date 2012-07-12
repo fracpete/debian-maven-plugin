@@ -11,8 +11,13 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
+import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.DefaultExecutor;
+import org.apache.commons.exec.ExecuteException;
+import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -137,23 +142,26 @@ public class PackageMojo extends AbstractDebianMojo
 
 	private void copyJars() throws IOException, MojoExecutionException
 	{
-		if (excludeAllJars)
-			return;
-		
 		List<String> allJars = new Vector<String>();
-		if (includeJars != null)
-			allJars.addAll(Arrays.asList(includeJars));
-		else if (includeJar != null)
-			allJars.add(includeJar);
+
+		if (excludeAllJars)
+			getLog().info("All JARs excluded from DEB package.");
+		else
+		{
+			if (includeJars != null)
+				allJars.addAll(Arrays.asList(includeJars));
+			else if (includeJar != null)
+				allJars.add(includeJar);
+		}
 
 		File targetLibDir = new File(stageDir, "usr/share/lib/" + packageName);
-		targetLibDir.mkdirs();
 
 		for (String jarname : allJars)
 		{
 			File srcFile = jarname.startsWith("/") ? new File(jarname) : new File(targetDir, jarname);
 			String basename = srcFile.getName();
 			File targetFile = new File(targetLibDir, basename);
+			targetFile.getParentFile().mkdirs();
 			
 			FileInputStream is = new FileInputStream(srcFile);
 			FileOutputStream os = new FileOutputStream(targetFile);
@@ -286,6 +294,58 @@ public class PackageMojo extends AbstractDebianMojo
 		out.close();
 	}
 	
+	private void generateManPages() throws MojoExecutionException, ExecuteException, IOException
+	{
+		File source = new File(sourceDir, "man");
+		if (!source.exists())
+		{
+			getLog().info("No manual page directory found: "+source);
+			return;
+		}
+
+		int npages = 0;
+		Collection<File> files = FileUtils.listFiles(source, null, true);
+		for (File f : files)
+		{
+			if (f.isFile() && f.getName().matches(".*[.][1-9]$"))
+			{
+				char section = f.getName().charAt(f.getName().length()-1);
+				File target = new File(stageDir, String.format("usr/share/man/man%c/%s.gz", section, f.getName()));
+				target.getParentFile().mkdirs();
+
+				CommandLine cmdline = new CommandLine("groff");
+				cmdline.addArguments(new String[]{"-man", "-Tascii", f.getPath()});
+
+				getLog().info("Start process: "+cmdline);
+
+				GZIPOutputStream os = new GZIPOutputStream(new FileOutputStream(target));
+				try
+				{
+					PumpStreamHandler streamHandler = new PumpStreamHandler(os, new LogOutputStream(getLog()));
+					DefaultExecutor exec = new DefaultExecutor();
+					exec.setStreamHandler(streamHandler);
+					int exitval = exec.execute(cmdline);
+					if (exitval == 0)
+						getLog().info("Manual page generated: "+target.getPath());
+					else
+					{
+						getLog().warn("Exit code "+exitval);
+						throw new MojoExecutionException("Process returned non-zero exit code: "+cmdline);
+					}
+				}
+				finally
+				{
+					os.close();
+				}
+
+				npages++;
+			}
+		}
+
+		if (npages == 0)
+			getLog().info("No manual pages found in directory: "+source);
+	}
+
 	private void generatePackage() throws IOException, MojoExecutionException
 	{
 		runProcess(new String[]{"fakeroot", "dpkg-deb", "--build", stageDir.toString(), getPackageFile().toString()}, true);
@@ -300,6 +360,7 @@ public class PackageMojo extends AbstractDebianMojo
 		try
 		{
 			//copyTree(sourceDir, stageDir, getLog());
+			generateManPages();
 			copyJars();
 			generateCopyright();
 			generateConffiles(new File(targetDebDir, "conffiles"));
