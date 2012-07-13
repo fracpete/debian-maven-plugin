@@ -5,10 +5,10 @@ import java.io.IOException;
 import org.apache.maven.plugin.MojoExecutionException;
 
 /**
- * @goal reprepro-install
+ * @goal deploy
  * @phase install
  */
-public class RepreproInstallMojo extends AbstractRepreproMojo
+public class RepreproDeployMojo extends AbstractRepreproMojo
 {
 	/**
 	 * @parameter expression="${deb.repository.branch}" default-value="experimental"
