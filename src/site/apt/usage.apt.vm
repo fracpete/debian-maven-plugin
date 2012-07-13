@@ -68,9 +68,9 @@ Usage
 *------------------+-----------------------+------------------------+-----------+------------------------+
   excludeAllJars   | deb.exclude.all-jars      | If true, no JARs are included | Boolean | false
 *------------------+-----------------------+------------------------+-----------+------------------------+
-  repositoryLocation | deb.repository.location | Location of the Debian repository | File |
+  repository       | deb.repository.location | Location of the Debian repository | File |
 *------------------+-----------------------+------------------------+-----------+------------------------+
-  repositoryBranch | deb.repository.branch     | The codename of the distribution branch | String | experimental
+  repositoryBranch | deb.repository.branch     | The codename of the distribution branch (e.g., lenny, natty, etc.) | String | experimental
 *------------------+-----------------------+------------------------+-----------+------------------------+
   repreproConfigurotionDir | deb.reprepro.config | Reprepro configuration directory | File |
 *------------------+-----------------------+------------------------+-----------+------------------------+
@@ -182,3 +182,18 @@ following:
   </plugins>
 </build>
 +----------------------------
+
+** Deploying
+
+	The plugin can use reprepro to deploy the Debian package to a local
+reprepro repository. The plugin assumes an existing reprepro repository and
+configuration, and requires pointers to their locations. The plugin uses the
+following parameters:
+
+	* repository (the repository location)
+
+	* repreproConfigurationDir (the reprepro configuration directory)
+
+	* repositoryBranch (optional)
+
+	[]

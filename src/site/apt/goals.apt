@@ -6,13 +6,13 @@ Goals
 
 	[deb:package] Generate a Debian package.
 
-	[deb:check] Check the package using Lintian.
+	[deb:check] Do some sanity checks using Lintian.
 
 	[deb:install] Install the package using dpkg.
 
 	[deb:clean] Cleanup all generated files.
 
-	[deb:reprepro-install] Install the package into a Debian repository using reprepro.
+	[deb:deploy] Deploy the package into a Debian repository using reprepro.
 
 	[]
 
@@ -26,10 +26,14 @@ System Requirements
 
 Debian package management tools:
 
-	* dpkg-deb
+	* dpkg-deb (goal: package)
 
-	* fakeroot
+	* fakeroot (goal: package)
 
-	* reprepro (optional)
+	* lintian (goal: check)
+
+	* dpkg, sudo (goal: install)
+
+	* reprepro (goal: deploy)
 
 	[]
