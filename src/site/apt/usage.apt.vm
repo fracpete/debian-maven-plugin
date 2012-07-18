@@ -85,6 +85,23 @@ there is no <<<jars>>> argument, the JAR name will be guessed. If a JAR contains
 the project version number, a symbolic link without the version number will be
 added.
 
+** Adding man pages
+
+	The plugin searches for man page source files in the directory <<<src/deb/man>>>.
+The files are automatically compiled, using <<<groff>>>. The source files must be named
+<<<pagename.N>>>, where <<<N>>> is the
+{{{http://unix.stackexchange.com/questions/3586/what-do-the-numbers-in-a-man-page-mean}section number}}.
+The compiled man pages are gzip'ed and included in the appropriate place in the deb file.
+Here are some pointers for help writing man pages:
+
+	* Wikipedia page on man pages: {{http://en.wikipedia.org/wiki/Man_page}}
+
+	* A short howto: {{http://www.linuxhowtos.org/System/creatingman.htm}}
+
+	* A somewhat more extensive howto: {{http://www.schweikhardt.net/man_page_howto.html}}
+
+	[]
+
 ** Adding other files
 
 	The plugin does not take care of files other than JARs.

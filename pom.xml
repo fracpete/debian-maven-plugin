@@ -7,7 +7,10 @@
 	<packaging>maven-plugin</packaging>
 	<name>Debian Maven Plugin</name>
 	<description>
-		This plugin helps building Debian packages from Maven projects.
+		This plugin helps building DEB packages from Maven projects.
+		The packages can be used in DEB-based operating systems such
+		as Debian and Ubuntu. The plugin uses external Debian tools
+		to do the actual packaging.
 	</description>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
