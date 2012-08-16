@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.sf.qxs</groupId>
 	<artifactId>debian-maven-plugin</artifactId>
-	<version>0.9-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<packaging>maven-plugin</packaging>
 	<name>Debian Maven Plugin</name>
 	<description>
