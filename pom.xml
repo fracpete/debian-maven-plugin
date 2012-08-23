@@ -1,5 +1,20 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<!--
+
+	  Before deploying, add a <server> entry to ~/.m2/settings.xml:
+
+	  <server>
+	    <id>debian-maven.sourceforge.net</id>
+	    <username>USERNAME,debian-maven</username>
+	    <password>PASSWORD</password>
+	  </server>
+
+	  To deploy release files, do:
+
+	    mvn -P release deploy
+
+	-->
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.sf.debian-maven</groupId>
 	<artifactId>debian-maven-plugin</artifactId>
@@ -12,6 +27,7 @@
 		as Debian and Ubuntu. The plugin uses external Debian tools
 		to do the actual packaging.
 	</description>
+	<url>http://debian-maven.sourceforge.net</url>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.5</maven.compiler.source>
@@ -28,6 +44,16 @@
 			</comments>
 		</license>
 	</licenses>
+	<scm>
+		<connection>https://git.code.sf.net/p/debian-maven/code</connection>
+		<url>https://git.code.sf.net/p/debian-maven/code</url>
+	</scm>
+	<developers>
+		<developer>
+			<name>Wowtor</name>
+			<email>wowtor@users.sourceforge.net</email>
+		</developer>
+	</developers>
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.maven</groupId>
@@ -56,15 +82,6 @@
 		</dependency>
 	</dependencies>
 	<distributionManagement>
-		<!--
-		  Before deploying, add a <server> entry to ~/.m2/settings.xml:
-
-		  <server>
-		    <id>debian-maven.sourceforge.net</id>
-		    <username>USERNAME,debian-maven</username>
-		    <password>PASSWORD</password>
-		  </server>
-		-->
 		<repository>
 			<id>debian-maven.sourceforge.net</id>
 			<url>scp://shell.sourceforge.net/home/frs/project/d/de/debian-maven/m2repo</url>
@@ -119,4 +136,40 @@
 			</plugin>
 		</plugins>
 	</reporting>
+	<profiles>
+		<profile>
+			<id>release</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-source-plugin</artifactId>
+						<version>2.1.2</version>
+						<executions>
+							<execution>
+								<id>attach-sources</id>
+								<phase>verify</phase>
+								<goals><goal>jar-no-fork</goal></goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals><goal>sign</goal></goals>
+							</execution>
+						</executions>
+						<configuration>
+							<keyname>${project.developers[0].email}</keyname>
+							<useAgent>true</useAgent>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>

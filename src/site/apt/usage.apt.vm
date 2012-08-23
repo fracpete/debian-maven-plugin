@@ -18,13 +18,13 @@ Usage
         <groupId>${project.groupId}</groupId>
         <artifactId>${project.artifactId}</artifactId>
         <version>${project.version}</version>
-	<configuration>
-		<!--
-		<packageName>my-package</packageName>
-		<packageVersion>1.0.0</packageVersion>
-		...
-		-->
-	</configuration>
+        <configuration>
+          <!--
+          <packageName>my-package</packageName>
+          <packageVersion>1.0.0</packageVersion>
+          ...
+          -->
+        </configuration>
       </plugin>
       ...
     </plugins>

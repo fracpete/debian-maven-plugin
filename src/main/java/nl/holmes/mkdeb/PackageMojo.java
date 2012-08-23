@@ -35,21 +35,25 @@ import org.apache.maven.plugin.logging.Log;
 public class PackageMojo extends AbstractDebianMojo
 {
 	/**
+	 * @required
 	 * @parameter expression="${deb.package.priority}" default-value="optional"
 	 */
 	protected String packagePriority;
 
 	/**
+	 * @required
 	 * @parameter expression="${deb.package.section}" default-value="contrib/utils"
 	 */
 	protected String packageSection;
 
 	/**
+	 * @required
 	 * @parameter expression="${deb.package.title}" default-value="${project.name}"
 	 */
 	protected String packageTitle;
 
 	/**
+	 * @required
 	 * @parameter expression="${deb.package.description}" default-value="${project.description}"
 	 */
 	protected String packageDescription;
