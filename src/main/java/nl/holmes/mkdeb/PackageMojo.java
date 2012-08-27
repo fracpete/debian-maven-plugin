@@ -352,7 +352,7 @@ public class PackageMojo extends AbstractDebianMojo
 
 	private void generatePackage() throws IOException, MojoExecutionException
 	{
-		runProcess(new String[]{"fakeroot", "dpkg-deb", "--build", stageDir.toString(), getPackageFile().toString()}, true);
+		runProcess(new String[]{"fakeroot", "--", "dpkg-deb", "--build", stageDir.toString(), getPackageFile().toString()}, true);
 	}
 
 	public void execute() throws MojoExecutionException
