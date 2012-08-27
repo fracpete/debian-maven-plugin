@@ -12,13 +12,13 @@
 
 	  To deploy release files, do:
 
-	    mvn -P release deploy
+	    mvn -P release deploy site-deploy
 
 	-->
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.sf.debian-maven</groupId>
 	<artifactId>debian-maven-plugin</artifactId>
-	<version>1.0.2-SNAPSHOT</version>
+	<version>1.0.2</version>
 	<packaging>maven-plugin</packaging>
 	<name>Debian Maven Plugin</name>
 	<description>
@@ -45,8 +45,9 @@
 		</license>
 	</licenses>
 	<scm>
-		<connection>https://git.code.sf.net/p/debian-maven/code</connection>
-		<url>https://git.code.sf.net/p/debian-maven/code</url>
+		<connection>scm:git:https://git.code.sf.net/p/debian-maven/code</connection>
+		<developerConnection>scm:git:ssh://git.code.sf.net/p/debian-maven/code</developerConnection>
+		<url>http://sourceforge.net/p/debian-maven/code</url>
 	</scm>
 	<developers>
 		<developer>
@@ -120,6 +121,7 @@
 						<reports>
 							<report>dependencies</report>
 							<report>license</report>
+							<report>scm</report>
 						</reports>
 					</reportSet>
 				</reportSets>

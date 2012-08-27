@@ -24,7 +24,7 @@ System Requirements
 | JDK     | 1.5      |
 *---------+----------+
 
-Debian package management tools:
+	Debian package management tools are also required for proper operation:
 
 	* dpkg-deb (goal: package)
 
