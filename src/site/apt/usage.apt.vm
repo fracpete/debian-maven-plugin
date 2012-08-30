@@ -78,11 +78,17 @@ Usage
 *------------------+-----------------------+------------------------+-----------+------------------------+
   maintainerEmail  | deb.maintatier.email      | Package maintainer's email address | String | \$\{project.developers\[0\].email\}
 *------------------+-----------------------+------------------------+-----------+------------------------+
-  includeJar       | deb.include.jar           | JAR file to be included (ignored if includeJars is provided) | String  | \$\{project.artifactId\}-\$\{project.version\}.jar
+  includeArtifacts |                           | Artifacts to be included, identified by their filenames. | String[] | All attached artifacts.
 *------------------+-----------------------+------------------------+-----------+------------------------+
-  includeJars      |                           | JAR files to be included | String\[\]  |
+  excludeArtifacts |                           | Artifacts to be excluded (takes precedence over includeArtifacts). | String[] |
 *------------------+-----------------------+------------------------+-----------+------------------------+
-  excludeAllJars   | deb.exclude.all-jars      | If true, no JARs are included | Boolean | false
+  excludeAllArtifacts |                        | Exclude all artifacts. | Boolean | false
+*------------------+-----------------------+------------------------+-----------+------------------------+
+  includeDependencies |                        | Dependency artifacts to be included, identified by their filenames. | String[] | All transitive dependencies.
+*------------------+-----------------------+------------------------+-----------+------------------------+
+  excludeDependencies |                         | Dependencies to be excluded (takes precedence over includeDependencies). | String[] |
+*------------------+-----------------------+------------------------+-----------+------------------------+
+  excludeAllDependencies |                        | Exclude all dependencies. | Boolean | false
 *------------------+-----------------------+------------------------+-----------+------------------------+
   repository       | deb.repository.location | Location of the Debian repository | File |
 *------------------+-----------------------+------------------------+-----------+------------------------+
@@ -93,13 +99,14 @@ Usage
 
 * Adding package content
 
-** Adding JARs
+** Adding JARs (and other attached artifacts and dependencies)
 
-	The JARs mentioned in the <<<jars>>> configuration argument are added to
-the Debian package in the directory <<</usr/share/lib/$\{packageName\}/>>>. If
-there is no <<<jars>>> argument, the JAR name will be guessed. If a JAR contains
-the project version number, a symbolic link without the version number will be
-added.
+	By default, all attached artifacts and dependencies are packaged.
+All artifacts can be <<excluded>> from the package by specifying <<<excludeAllArtifacts>>>.
+If <<<includeArtifacts>>> is provided, only those listed artifacts are included.
+The artifacts in <<<excludeArtifacts>>> are excluded.
+Behavior for dependency inclusion is controlled analogously by the parameters <<<includeDependencies>>>, <<<excludeDependencies>>> and <<<excludeAllDependencies>>>.
+Attached artifacts will be accompanied by a symbolic link, which enables reference without the version number.
 
 ** Adding man pages
 
