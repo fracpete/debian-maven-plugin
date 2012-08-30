@@ -2,27 +2,35 @@ package nl.holmes.mkdeb;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.collections15.MultiMap;
+import org.apache.commons.collections15.multimap.MultiHashMap;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteException;
 import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.project.MavenProject;
+
+import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
  * Generates a Debian package.
@@ -31,6 +39,7 @@ import org.apache.maven.plugin.logging.Log;
  *
  * @goal package
  * @phase package
+ * @requiresDependencyResolution
  */
 public class PackageMojo extends AbstractDebianMojo
 {
@@ -74,115 +83,158 @@ public class PackageMojo extends AbstractDebianMojo
 	protected String projectOrganization;
 
 	/**
-	 * @parameter expression="${deb.include.jar}" default-value="${project.artifactId}-${project.version}.jar"
+	 * @parameter expression="${deb.include.jar}"
 	 */
+	@Deprecated
 	protected String includeJar;
 
 	/**
 	 * @parameter
 	 */
+	@Deprecated
 	protected String[] includeJars;
 
 	/**
-	 * @parameter expression="${deb.exclude.all-jars}" default-value="false"
+	 * @parameter expression="${deb.exclude.all-jars}"
 	 */
-	protected boolean excludeAllJars;
+	@Deprecated
+	protected String excludeAllJars;
 
-	private static void copyTree(File sourceDir, File targetDir, Log log)
-			throws IOException
-	{
-		log.debug("Searching for package files in "+sourceDir);
-		if (!sourceDir.exists())
-		{
-			log.warn("Resource directory does not exist: "+sourceDir);
-			return;
-		}
-		
-		Collection<File> files = FileUtils.listFiles(sourceDir, null, true);
-		for (File src : files) {
-			if (src.isDirectory())
-				src.mkdirs();
-			else if (src.isFile()) {
-				String fname = src.toString().substring(
-						sourceDir.toString().length() + 1);
-				File target = new File(targetDir, fname);
+	/**
+	 * @parameter
+	 */
+	protected Set<String> includeArtifacts;
 
-				FileInputStream is = new FileInputStream(src);
-				FileOutputStream os = new FileOutputStream(target);
+	/**
+	 * @parameter
+	 */
+	protected Set<String> excludeArtifacts;
 
-				log.info(String.format("Copying %s.", src.toString()));
-				IOUtils.copy(is, os);
-				is.close();
-				os.close();
-			}
-		}
-	}
-	
-	private String getStrippedBasename(final String filename)
-	{
-		int idx = filename.indexOf(packageVersion);
-		if (idx < 2)
-			return filename;
-		
-		if (filename.charAt(idx-1) == '-')
-			idx--;
+	/**
+	 * @parameter default="false"
+	 */
+	protected boolean excludeAllArtifacts;
 
-		return filename.substring(0, idx);
-	}
+	/**
+	 * @parameter
+	 */
+	protected Set<String> includeDependencies;
 
-	private String getExtension(final String filename)
-	{
-		int idx = filename.lastIndexOf(".");
-		if (idx < 1)
-			return filename;
-		else
-			return filename.substring(idx);
-	}
+	/**
+	 * @parameter
+	 */
+	protected Set<String> excludeDependencies;
 
-	private String stripVersion(final String filename)
-	{
-		return getStrippedBasename(filename) + getExtension(filename);
-	}
+	/**
+	 * @parameter default="false"
+	 */
+	protected boolean excludeAllDependencies;
+
+	/**
+	 * The Maven project object
+	 * 
+	 * @parameter expression="${project}"
+	 */
+	private MavenProject project;
 
 	private void copyJars() throws IOException, MojoExecutionException
 	{
-		List<String> allJars = new Vector<String>();
-
-		if (excludeAllJars)
-			getLog().info("All JARs excluded from DEB package.");
-		else
-		{
-			if (includeJars != null)
-				allJars.addAll(Arrays.asList(includeJars));
-			else if (includeJar != null)
-				allJars.add(includeJar);
-		}
+		if (excludeAllArtifacts)
+			return;
 
 		File targetLibDir = new File(stageDir, "usr/share/lib/" + packageName);
+		targetLibDir.mkdirs();
 
-		for (String jarname : allJars)
+		@SuppressWarnings("unchecked")
+		Collection<Artifact> artifacts = (Collection<Artifact>)project.getAttachedArtifacts();
+		for (Artifact a : artifacts)
 		{
-			File srcFile = jarname.startsWith("/") ? new File(jarname) : new File(targetDir, jarname);
-			String basename = srcFile.getName();
-			File targetFile = new File(targetLibDir, basename);
-			targetFile.getParentFile().mkdirs();
-			
-			FileInputStream is = new FileInputStream(srcFile);
-			FileOutputStream os = new FileOutputStream(targetFile);
-
-			getLog().info(String.format("Copying %s to %s", srcFile.toString(), targetFile.toString()));
-			IOUtils.copyLarge(is, os);
-			is.close();
-			os.close();
-			
-			String strippedname = stripVersion(basename);
-			if (!basename.equals(strippedname))
+			boolean doExclude = excludeArtifacts != null && excludeDependencies.contains(a.getFile().getName());
+			if (!doExclude)
 			{
-				File symlink = new File(targetLibDir, strippedname);
-				if (symlink.exists())
-					symlink.delete();
-				runProcess(new String[]{"ln", "-s", basename, symlink.toString()}, true);
+				if (includeArtifacts == null || includeArtifacts.contains(a.getFile().getName()))
+				{
+					File src = a.getFile();
+					File trg = new File(targetLibDir, src.getName());
+					FileUtils.copyFile(src, trg);
+
+					File symlink = new File(targetLibDir, a.getArtifactId());
+					if (symlink.exists())
+						symlink.delete();
+					runProcess(new String[]{"ln", "-s", src.getName(), symlink.toString()}, true);
+				}
 			}
+		}
+	}
+
+	private void copyDependencies() throws FileNotFoundException, IOException, MojoExecutionException
+	{
+		if (excludeAllDependencies)
+			return;
+
+		File targetLibDir = new File(stageDir, "usr/share/lib/" + packageName);
+		targetLibDir.mkdirs();
+
+		@SuppressWarnings("unchecked")
+		Collection<Artifact> artifacts = (Collection<Artifact>)project.getRuntimeArtifacts();
+
+		/*
+		 * TODO: this code doesn't work as it should due to limitations of Maven API; see also:
+		 * http://jira.codehaus.org/browse/MNG-4831
+		 */
+
+		Map<String,Artifact> ids = new HashMap<String,Artifact>();
+		for (Artifact a : artifacts)
+			ids.put(a.getId(), a);
+
+		MultiMap<Artifact,String> deps = new MultiHashMap<Artifact,String>();
+		for (Artifact a : artifacts)
+		{
+			boolean doExclude = excludeDependencies != null && Collections.disjoint(a.getDependencyTrail(), excludeDependencies);
+
+			if (!doExclude)
+			{
+				if (includeDependencies == null || Collections.disjoint(a.getDependencyTrail(), includeDependencies))
+				{
+					File src = a.getFile();
+					File trg = new File(targetLibDir, src.getName());
+					FileUtils.copyFile(src, trg);
+
+					for (String id : a.getDependencyTrail())
+					{
+						Artifact depending = ids.get(id);
+						if (depending != null)
+							deps.put(depending, trg.getPath().substring(stageDir.getPath().length()));
+					}
+				}
+			}
+		}
+
+		for (Map.Entry<Artifact,Collection<String>> e : deps.entrySet())
+		{
+			Artifact a = e.getKey();
+			
+			File deplist = new File(targetLibDir, String.format("%s-%s.inc", a.getArtifactId(), a.getVersion()));
+			FileWriter out = new FileWriter(deplist);
+			try
+			{
+				out.write(String.format("artifacts=%s\n", StringUtils.join(new HashSet<String>(e.getValue()), ":")));
+			}
+			finally
+			{
+				out.close();
+			}
+		}
+
+		File functions = new File(targetLibDir, "functions");
+		FileWriter out = new FileWriter(functions);
+		try
+		{
+			out.write(String.format("artifacts=%s\n", StringUtils.join(deps.values(), ":")));
+		}
+		finally
+		{
+			out.close();
 		}
 	}
 
@@ -327,6 +379,7 @@ public class PackageMojo extends AbstractDebianMojo
 				{
 					PumpStreamHandler streamHandler = new PumpStreamHandler(os, new LogOutputStream(getLog()));
 					DefaultExecutor exec = new DefaultExecutor();
+					exec.setWorkingDirectory(f.getParentFile());
 					exec.setStreamHandler(streamHandler);
 					int exitval = exec.execute(cmdline);
 					if (exitval == 0)
@@ -355,8 +408,18 @@ public class PackageMojo extends AbstractDebianMojo
 		runProcess(new String[]{"fakeroot", "--", "dpkg-deb", "--build", stageDir.toString(), getPackageFile().toString()}, true);
 	}
 
+	private void checkDeprecated(boolean haveParameter, String paramName) throws MojoExecutionException
+	{
+		if (haveParameter)
+			throw new MojoExecutionException("Deprecated parameter used: "+paramName);
+	}
+
 	public void execute() throws MojoExecutionException
 	{
+		checkDeprecated(includeJar != null, "includeJar");
+		checkDeprecated(includeJars != null && !includeJars.isEmpty(), "includeJars");
+		checkDeprecated(excludeAllJars != null, "excludeAllJars");
+
 		File targetDebDir = new File(stageDir, "DEBIAN");
 		if (!targetDebDir.exists() && !targetDebDir.mkdirs())
 			throw new MojoExecutionException("Unable to create directory: "+targetDebDir);
@@ -366,6 +429,7 @@ public class PackageMojo extends AbstractDebianMojo
 			//copyTree(sourceDir, stageDir, getLog());
 			generateManPages();
 			copyJars();
+			copyDependencies();
 			generateCopyright();
 			generateConffiles(new File(targetDebDir, "conffiles"));
 			generateControl(new File(targetDebDir, "control"));
