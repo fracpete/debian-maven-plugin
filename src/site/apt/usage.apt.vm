@@ -78,13 +78,15 @@ Usage
 *------------------+-----------------------+------------------------+-----------+------------------------+
   maintainerEmail  | deb.maintatier.email      | Package maintainer's email address | String | \$\{project.developers\[0\].email\}
 *------------------+-----------------------+------------------------+-----------+------------------------+
-  includeArtifacts |                           | Artifacts to be included, identified by their filenames. | String[] | All attached artifacts.
+  includeArtifacts |                           | Artifacts to be included, identified by their filenames. | String[] | The project artifact and its dependencies.
 *------------------+-----------------------+------------------------+-----------+------------------------+
   excludeArtifacts |                           | Artifacts to be excluded (takes precedence over includeArtifacts). | String[] |
 *------------------+-----------------------+------------------------+-----------+------------------------+
-  excludeAllArtifacts |                        | Exclude all artifacts (attached artifacts and dependencies) | Boolean | false
+  excludeAllArtifacts |                        | Exclude all artifacts (except attached artifacts) | Boolean | false
 *------------------+-----------------------+------------------------+-----------+------------------------+
   excludeAllDependencies |                     | Exclude all dependencies | Boolean | false
+*------------------+-----------------------+------------------------+-----------+------------------------+
+  includeAttachedArtifacts |                   | Include all attached artifacts. | Boolean | true
 *------------------+-----------------------+------------------------+-----------+------------------------+
   repository       | deb.repository.location | Location of the Debian repository | File |
 *------------------+-----------------------+------------------------+-----------+------------------------+
@@ -97,14 +99,16 @@ Usage
 
 ** Adding JARs (and other attached artifacts and dependencies)
 
-	By default, all attached artifacts and dependencies are packaged.
-All artifacts can be <<excluded>> from the package by specifying <<<excludeAllArtifacts>>>.
-Setting <<<excludeAllDependencies>>> excludes dependencies but not attached artifacts.
+	By default, the project artifact, its dependencies, and attached artifacts are packaged.
+The project artifact and its dependencies can be <<excluded>> from the package by setting <<<excludeAllArtifacts>>> to <<<true>>>.
+The parameter <<<excludeAllDependencies>>> does the same, but only for dependencies.
+The inclusion of attached artifacts is governed by <<<includeAttachedArtifacts>>>.
 If <<<includeArtifacts>>> is provided, only those listed artifacts are included.
 The artifacts in <<<excludeArtifacts>>> are excluded from the Debian package.
 Artifacts will be accompanied by a symbolic link, which enables reference without the version number.
 
-	For each artifact, a file is created which lists all dependencies of that artifact.
+	For the project artifact and each of its dependencies, a file is
+created which lists all dependencies of the artifact.
 The name of this file is the artifact filename with its extension replaced by <<<.inc>>>.
 This is particularly useful for setting the classpath, e.g. from a shell script.
 

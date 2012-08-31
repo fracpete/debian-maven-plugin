@@ -10,6 +10,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -30,8 +31,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
-
-import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
  * Generates a Debian package.
@@ -126,11 +125,24 @@ public class PackageMojo extends AbstractDebianMojo
 	protected boolean excludeAllDependencies;
 
 	/**
+	 * @parameter default="true"
+	 * @since 1.0.3
+	 */
+	protected boolean includeAttachedArtifacts;
+
+	/**
 	 * The Maven project object
 	 * 
 	 * @parameter expression="${project}"
 	 */
 	private MavenProject project;
+
+	private File createTargetLibDir()
+	{
+		File targetLibDir = new File(stageDir, "usr/share/lib/" + packageName);
+		targetLibDir.mkdirs();
+		return targetLibDir;
+	}
 
 	private void createSymlink(File symlink, String target) throws ExecuteException, MojoExecutionException, IOException
 	{
@@ -141,6 +153,9 @@ public class PackageMojo extends AbstractDebianMojo
 
 	private void writeIncludeFile(File targetLibDir, String artifactId, String version, Collection<String> dependencies) throws IOException, MojoExecutionException
 	{
+		if (dependencies == null)
+			dependencies = Collections.emptySet();
+
 		File deplist = new File(targetLibDir, String.format("%s-%s.inc", artifactId, version));
 		FileWriter out = new FileWriter(deplist);
 		try
@@ -156,16 +171,34 @@ public class PackageMojo extends AbstractDebianMojo
 	}
 
 	@SuppressWarnings("unchecked")
+	private void copyAttachedArtifacts() throws FileNotFoundException, IOException, MojoExecutionException
+	{
+		if (!includeAttachedArtifacts)
+			return;
+
+		File targetLibDir = createTargetLibDir();
+
+		for (Artifact a : (Collection<Artifact>)project.getAttachedArtifacts())
+		{
+			File src = a.getFile();
+			File trg = new File(targetLibDir, src.getName());
+			FileUtils.copyFile(src, trg);
+
+			String linkname = src.getName().replaceFirst("-"+a.getVersion(), "");
+			createSymlink(new File(targetLibDir, linkname), a.getFile().getName());
+		}
+	}
+
+	@SuppressWarnings("unchecked")
 	private void copyArtifacts() throws FileNotFoundException, IOException, MojoExecutionException
 	{
 		if (excludeAllArtifacts)
 			return;
 
-		File targetLibDir = new File(stageDir, "usr/share/lib/" + packageName);
-		targetLibDir.mkdirs();
+		File targetLibDir = createTargetLibDir();
 
 		Collection<Artifact> artifacts = new ArrayList<Artifact>();
-		artifacts.addAll((Collection<Artifact>)project.getAttachedArtifacts());
+		artifacts.add(project.getArtifact());
 
 		if (!excludeAllDependencies)
 			artifacts.addAll((Collection<Artifact>)project.getRuntimeArtifacts());
@@ -182,21 +215,24 @@ public class PackageMojo extends AbstractDebianMojo
 		MultiMap<Artifact,String> deps = new MultiHashMap<Artifact,String>();
 		for (Artifact a : artifacts)
 		{
-			boolean doExclude = excludeArtifacts != null && Collections.disjoint(a.getDependencyTrail(), excludeArtifacts);
+			boolean doExclude = excludeArtifacts != null && (a.getDependencyTrail() == null || Collections.disjoint(a.getDependencyTrail(), excludeArtifacts));
 
 			if (!doExclude)
 			{
-				if (includeArtifacts == null || Collections.disjoint(a.getDependencyTrail(), includeArtifacts))
+				if (includeArtifacts == null || a.getDependencyTrail() == null || Collections.disjoint(a.getDependencyTrail(), includeArtifacts))
 				{
 					File src = a.getFile();
 					File trg = new File(targetLibDir, src.getName());
 					FileUtils.copyFile(src, trg);
 
-					for (String id : a.getDependencyTrail())
+					if (a.getDependencyTrail() != null)
 					{
-						Artifact depending = ids.get(id);
-						if (depending != null)
-							deps.put(depending, trg.getPath().substring(stageDir.getPath().length()));
+						for (String id : a.getDependencyTrail())
+						{
+							Artifact depending = ids.get(id);
+							if (depending != null)
+								deps.put(depending, trg.getPath().substring(stageDir.getPath().length()));
+						}
 					}
 				}
 			}
@@ -204,16 +240,9 @@ public class PackageMojo extends AbstractDebianMojo
 
 		for (Artifact a : artifacts)
 		{
-			File alink = new File(targetLibDir, String.format("%s.%s", a.getArtifactId(), a.getType()));
-			if (alink.exists())
-				alink.delete();
-			runProcess(new String[]{"ln", "-s", a.getFile().getName(), alink.toString()}, true);
-
+			createSymlink(new File(targetLibDir, String.format("%s.%s", a.getArtifactId(), a.getType())), a.getFile().getName());
 			writeIncludeFile(targetLibDir, a.getArtifactId(), a.getVersion(), deps.get(a));
 		}
-
-		if (project.getAttachedArtifacts().isEmpty())
-			writeIncludeFile(targetLibDir, project.getArtifactId(), project.getVersion(), deps.values());
 	}
 
 	private void generateCopyright() throws IOException
@@ -405,6 +434,7 @@ public class PackageMojo extends AbstractDebianMojo
 		try
 		{
 			generateManPages();
+			copyAttachedArtifacts();
 			copyArtifacts();
 			generateCopyright();
 			generateConffiles(new File(targetDebDir, "conffiles"));
