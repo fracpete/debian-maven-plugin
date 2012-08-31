@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
@@ -102,31 +103,25 @@ public class PackageMojo extends AbstractDebianMojo
 
 	/**
 	 * @parameter
+	 * @since 1.0.3
 	 */
 	protected Set<String> includeArtifacts;
 
 	/**
 	 * @parameter
+	 * @since 1.0.3
 	 */
 	protected Set<String> excludeArtifacts;
 
 	/**
 	 * @parameter default="false"
+	 * @since 1.0.3
 	 */
 	protected boolean excludeAllArtifacts;
 
 	/**
-	 * @parameter
-	 */
-	protected Set<String> includeDependencies;
-
-	/**
-	 * @parameter
-	 */
-	protected Set<String> excludeDependencies;
-
-	/**
 	 * @parameter default="false"
+	 * @since 1.0.3
 	 */
 	protected boolean excludeAllDependencies;
 
@@ -137,7 +132,31 @@ public class PackageMojo extends AbstractDebianMojo
 	 */
 	private MavenProject project;
 
-	private void copyJars() throws IOException, MojoExecutionException
+	private void createSymlink(File symlink, String target) throws ExecuteException, MojoExecutionException, IOException
+	{
+		if (symlink.exists())
+			symlink.delete();
+		runProcess(new String[]{"ln", "-s", target, symlink.toString()}, true);
+	}
+
+	private void writeIncludeFile(File targetLibDir, String artifactId, String version, Collection<String> dependencies) throws IOException, MojoExecutionException
+	{
+		File deplist = new File(targetLibDir, String.format("%s-%s.inc", artifactId, version));
+		FileWriter out = new FileWriter(deplist);
+		try
+		{
+			out.write(String.format("artifacts=%s\n", StringUtils.join(new HashSet<String>(dependencies), ":")));
+		}
+		finally
+		{
+			out.close();
+		}
+
+		createSymlink(new File(targetLibDir, String.format("%s.inc", artifactId)), deplist.getName());
+	}
+
+	@SuppressWarnings("unchecked")
+	private void copyArtifacts() throws FileNotFoundException, IOException, MojoExecutionException
 	{
 		if (excludeAllArtifacts)
 			return;
@@ -145,38 +164,11 @@ public class PackageMojo extends AbstractDebianMojo
 		File targetLibDir = new File(stageDir, "usr/share/lib/" + packageName);
 		targetLibDir.mkdirs();
 
-		@SuppressWarnings("unchecked")
-		Collection<Artifact> artifacts = (Collection<Artifact>)project.getAttachedArtifacts();
-		for (Artifact a : artifacts)
-		{
-			boolean doExclude = excludeArtifacts != null && excludeDependencies.contains(a.getFile().getName());
-			if (!doExclude)
-			{
-				if (includeArtifacts == null || includeArtifacts.contains(a.getFile().getName()))
-				{
-					File src = a.getFile();
-					File trg = new File(targetLibDir, src.getName());
-					FileUtils.copyFile(src, trg);
+		Collection<Artifact> artifacts = new ArrayList<Artifact>();
+		artifacts.addAll((Collection<Artifact>)project.getAttachedArtifacts());
 
-					File symlink = new File(targetLibDir, a.getArtifactId());
-					if (symlink.exists())
-						symlink.delete();
-					runProcess(new String[]{"ln", "-s", src.getName(), symlink.toString()}, true);
-				}
-			}
-		}
-	}
-
-	private void copyDependencies() throws FileNotFoundException, IOException, MojoExecutionException
-	{
-		if (excludeAllDependencies)
-			return;
-
-		File targetLibDir = new File(stageDir, "usr/share/lib/" + packageName);
-		targetLibDir.mkdirs();
-
-		@SuppressWarnings("unchecked")
-		Collection<Artifact> artifacts = (Collection<Artifact>)project.getRuntimeArtifacts();
+		if (!excludeAllDependencies)
+			artifacts.addAll((Collection<Artifact>)project.getRuntimeArtifacts());
 
 		/*
 		 * TODO: this code doesn't work as it should due to limitations of Maven API; see also:
@@ -190,11 +182,11 @@ public class PackageMojo extends AbstractDebianMojo
 		MultiMap<Artifact,String> deps = new MultiHashMap<Artifact,String>();
 		for (Artifact a : artifacts)
 		{
-			boolean doExclude = excludeDependencies != null && Collections.disjoint(a.getDependencyTrail(), excludeDependencies);
+			boolean doExclude = excludeArtifacts != null && Collections.disjoint(a.getDependencyTrail(), excludeArtifacts);
 
 			if (!doExclude)
 			{
-				if (includeDependencies == null || Collections.disjoint(a.getDependencyTrail(), includeDependencies))
+				if (includeArtifacts == null || Collections.disjoint(a.getDependencyTrail(), includeArtifacts))
 				{
 					File src = a.getFile();
 					File trg = new File(targetLibDir, src.getName());
@@ -210,32 +202,18 @@ public class PackageMojo extends AbstractDebianMojo
 			}
 		}
 
-		for (Map.Entry<Artifact,Collection<String>> e : deps.entrySet())
+		for (Artifact a : artifacts)
 		{
-			Artifact a = e.getKey();
-			
-			File deplist = new File(targetLibDir, String.format("%s-%s.inc", a.getArtifactId(), a.getVersion()));
-			FileWriter out = new FileWriter(deplist);
-			try
-			{
-				out.write(String.format("artifacts=%s\n", StringUtils.join(new HashSet<String>(e.getValue()), ":")));
-			}
-			finally
-			{
-				out.close();
-			}
+			File alink = new File(targetLibDir, String.format("%s.%s", a.getArtifactId(), a.getType()));
+			if (alink.exists())
+				alink.delete();
+			runProcess(new String[]{"ln", "-s", a.getFile().getName(), alink.toString()}, true);
+
+			writeIncludeFile(targetLibDir, a.getArtifactId(), a.getVersion(), deps.get(a));
 		}
 
-		File functions = new File(targetLibDir, "functions");
-		FileWriter out = new FileWriter(functions);
-		try
-		{
-			out.write(String.format("artifacts=%s\n", StringUtils.join(deps.values(), ":")));
-		}
-		finally
-		{
-			out.close();
-		}
+		if (project.getAttachedArtifacts().isEmpty())
+			writeIncludeFile(targetLibDir, project.getArtifactId(), project.getVersion(), deps.values());
 	}
 
 	private void generateCopyright() throws IOException
@@ -426,10 +404,8 @@ public class PackageMojo extends AbstractDebianMojo
 
 		try
 		{
-			//copyTree(sourceDir, stageDir, getLog());
 			generateManPages();
-			copyJars();
-			copyDependencies();
+			copyArtifacts();
 			generateCopyright();
 			generateConffiles(new File(targetDebDir, "conffiles"));
 			generateControl(new File(targetDebDir, "control"));
