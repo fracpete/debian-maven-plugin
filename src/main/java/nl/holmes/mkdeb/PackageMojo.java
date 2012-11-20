@@ -113,19 +113,19 @@ public class PackageMojo extends AbstractDebianMojo
 	protected Set<String> excludeArtifacts;
 
 	/**
-	 * @parameter default="false"
+	 * @parameter default-value="false"
 	 * @since 1.0.3
 	 */
 	protected boolean excludeAllArtifacts;
 
 	/**
-	 * @parameter default="false"
+	 * @parameter default-value="false"
 	 * @since 1.0.3
 	 */
 	protected boolean excludeAllDependencies;
 
 	/**
-	 * @parameter default="true"
+	 * @parameter default-value="true"
 	 * @since 1.0.3
 	 */
 	protected boolean includeAttachedArtifacts;
