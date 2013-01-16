@@ -187,6 +187,7 @@ public class PackageMojo extends AbstractDebianMojo
 
 	private File copyArtifact(Artifact a, File targetLibDir) throws IOException, MojoExecutionException
 	{
+		getLog().info(String.format("Artifact: %s", a.getFile().getPath()));
 		File src = a.getFile();
 		File trg = new File(targetLibDir, src.getName());
 		FileUtils.copyFile(src, trg);
@@ -201,8 +202,12 @@ public class PackageMojo extends AbstractDebianMojo
 	private void copyAttachedArtifacts() throws FileNotFoundException, IOException, MojoExecutionException
 	{
 		if (!includeAttachedArtifacts)
+		{
+			getLog().info("Skipping attached project artifacts.");
 			return;
+		}
 
+		getLog().info("Copying attached project artifacts.");
 		File targetLibDir = createTargetLibDir();
 
 		for (Artifact a : (Collection<Artifact>)project.getAttachedArtifacts())
@@ -213,15 +218,23 @@ public class PackageMojo extends AbstractDebianMojo
 	private void copyArtifacts() throws FileNotFoundException, IOException, MojoExecutionException
 	{
 		if (excludeAllArtifacts)
+		{
+			getLog().info("Skipping regular project artifacts and dependencies.");
 			return;
+		}
 
 		File targetLibDir = createTargetLibDir();
 
 		Collection<Artifact> artifacts = new ArrayList<Artifact>();
 		artifacts.add(project.getArtifact());
 
-		if (!excludeAllDependencies)
+		if (excludeAllDependencies)
+			getLog().info("Copying regular project artifacts but not dependencies.");
+		else
+		{
+			getLog().info("Copying regular project artifacts and dependencies.");
 			artifacts.addAll((Collection<Artifact>)project.getRuntimeArtifacts());
+		}
 
 		/*
 		 * TODO: this code doesn't work as it should due to limitations of Maven API; see also:
