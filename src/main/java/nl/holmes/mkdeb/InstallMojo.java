@@ -15,7 +15,10 @@ public class InstallMojo extends AbstractDebianMojo
 {
 	private void runInstall() throws IOException, MojoExecutionException
 	{
-		runProcess(new String[]{"sudo", "dpkg", "-i", getPackageFile().toString()}, true);
+		if (getPackageFile().exists())
+			runProcess(new String[]{"sudo", "dpkg", "-i", getPackageFile().toString()}, true);
+		else
+			getLog().warn("Debian package file not found; doing nothing.");
 	}
 
 	public void execute() throws MojoExecutionException
