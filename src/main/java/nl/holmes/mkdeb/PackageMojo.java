@@ -187,6 +187,9 @@ public class PackageMojo extends AbstractDebianMojo
 
 	private File copyArtifact(Artifact a, File targetLibDir) throws IOException, MojoExecutionException
 	{
+		if (a.getFile() == null)
+			throw new MojoExecutionException(String.format("No file was built for required artifact: %s:%s:%s", a.getGroupId(), a.getArtifactId(), a.getVersion()));
+
 		getLog().info(String.format("Artifact: %s", a.getFile().getPath()));
 		File src = a.getFile();
 		File trg = new File(targetLibDir, src.getName());

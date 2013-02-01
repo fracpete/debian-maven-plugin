@@ -82,7 +82,7 @@ Usage
 *------------------+-----------------------+------------------------+-----------+------------------------+
   excludeArtifacts |                           | Artifacts to be excluded (takes precedence over includeArtifacts). | String[] |
 *------------------+-----------------------+------------------------+-----------+------------------------+
-  excludeAllArtifacts |                        | Exclude all artifacts (except attached artifacts) | Boolean | false
+  excludeAllArtifacts |                        | Exclude all regular artifacts (attached artifacts are not affected) | Boolean | false
 *------------------+-----------------------+------------------------+-----------+------------------------+
   excludeAllDependencies |                     | Exclude all dependencies | Boolean | false
 *------------------+-----------------------+------------------------+-----------+------------------------+
