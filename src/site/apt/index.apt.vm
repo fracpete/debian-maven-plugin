@@ -1,5 +1,5 @@
 	---------------
-	Introduction
+	${project.name} :: Introduction
 	---------------
 
 ${project.name}
