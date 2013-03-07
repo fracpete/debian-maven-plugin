@@ -17,7 +17,7 @@ public class RepreproDeployMojo extends AbstractRepreproMojo
 	protected String repositoryBranch;
 
 	/**
-	 * @parameter expression="${deb.deploy.skipMissing}" default-value="true"
+	 * @parameter expression="${deb.deploy.skipMissing}" default-value="false"
 	 * @since 1.0.4
 	 */
 	protected boolean skipDeployMissing;
