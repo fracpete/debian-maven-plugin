@@ -94,6 +94,8 @@ Usage
 *------------------+-----------------------+------------------------+-----------+------------------------+
   repreproConfigurotionDir | deb.reprepro.config | Reprepro configuration directory | File |
 *------------------+-----------------------+------------------------+-----------+------------------------+
+  skipDeployMissing| deb.deploy.skipMissing    | Skip package deployment if the package does not exist | Boolean | true
+*------------------+-----------------------+------------------------+-----------+------------------------+
 
 * Adding package content
 
@@ -234,7 +236,7 @@ reprepro repository. The plugin assumes an existing reprepro repository and
 configuration, and requires pointers to their locations. The plugin uses the
 following parameters:
 
-	* repository (the repository location)
+	* repository (path to the repository; ex: /path/to/repo)
 
 	* repreproConfigurationDir (the reprepro configuration directory)
 

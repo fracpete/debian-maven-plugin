@@ -1,5 +1,6 @@
 package nl.holmes.mkdeb;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -15,9 +16,19 @@ public class RepreproDeployMojo extends AbstractRepreproMojo
 	 */
 	protected String repositoryBranch;
 
+	/**
+	 * @parameter expression="${deb.deploy.skipMissing}" default-value="true"
+	 * @since 1.0.4
+	 */
+	protected boolean skipDeployMissing;
+
 	private void runReprepro() throws IOException, MojoExecutionException
 	{
-		runProcess(new String[]{"reprepro", "--confdir", repreproConfigurationDir.toString(), "--basedir", repository.toString(), "includedeb", repositoryBranch, getPackageFile().toString()}, true);
+		File pkgfile = getPackageFile();
+		if (pkgfile.exists())
+			runProcess(new String[]{"reprepro", "--confdir", repreproConfigurationDir.toString(), "--basedir", repository.toString(), "includedeb", repositoryBranch, pkgfile.toString()}, true);
+		else
+			getLog().info("Skipping deployment of non-existent package: "+pkgfile);
 	}
 
 	public void execute() throws MojoExecutionException
