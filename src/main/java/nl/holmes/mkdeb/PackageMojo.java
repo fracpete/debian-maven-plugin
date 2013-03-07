@@ -298,7 +298,7 @@ public class PackageMojo extends AbstractDebianMojo
 		PrintWriter out = new PrintWriter(new FileWriter(target));
 
 		out.println("Package: "+packageName);
-		out.println("Version: "+packageVersion);
+		out.println("Version: "+getPackageVersion());
 
 		if (packageSection != null)
 			out.println("Section: "+packageSection);
@@ -306,7 +306,7 @@ public class PackageMojo extends AbstractDebianMojo
 			out.println("Priority: "+packagePriority);
 		out.println("Architecture: "+packageArchitecture);
 		if (packageDependencies != null && packageDependencies.length > 0)
-			out.println("Depends: " + StringUtils.join(packageDependencies, ", "));
+			out.println("Depends: " + StringUtils.join(processVersion(packageDependencies), ", "));
 
 		out.printf("Installed-Size: %d\n", 1 + FileUtils.sizeOfDirectory(stageDir) / 1024);
 

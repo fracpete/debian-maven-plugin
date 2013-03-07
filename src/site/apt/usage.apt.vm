@@ -242,4 +242,12 @@ following parameters:
 
 	* repositoryBranch (optional)
 
+	* skipDeployMissing (optional)
+
 	[]
+
+	<<Note:>> when the package version has the substring <<<-SNAPSHOT>>>,
+it is replaced by the modification time of the file <<<pom.xml>>>. This way,
+each change of the POM causes an increase of the version number, which is
+useful as reprepro does not allow you to deploy an update with the same version
+number.

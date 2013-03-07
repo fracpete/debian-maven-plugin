@@ -2,7 +2,10 @@ package nl.holmes.mkdeb;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
@@ -21,7 +24,7 @@ public abstract class AbstractDebianMojo extends AbstractMojo
 	/**
 	 * @parameter expression="${deb.package.version}" default-value="${project.version}"
 	 */
-	protected String packageVersion;
+	private String packageVersion;
 
 	/**
 	 * @parameter expression="${deb.package.revision}" default-value="1"
@@ -52,9 +55,38 @@ public abstract class AbstractDebianMojo extends AbstractMojo
 	/** @parameter default-value="${basedir}/target/deb" */
 	protected File stageDir;
 
+	/** @parameter default-value="${basedir}/pom.xml" */
+	private File snapshotRevisionFile;
+
+	private static final DateFormat datefmt = new SimpleDateFormat("yyyyMMddHHmm");
+
+	private String snapshotRevision = null;
+
+	protected String processVersion(String version)
+	{
+		if (snapshotRevision == null)
+			snapshotRevision = "+" + datefmt.format(new Date(snapshotRevisionFile.lastModified()));
+
+		return version.replaceAll("-SNAPSHOT", snapshotRevision);
+	}
+
+	protected String[] processVersion(String[] versions)
+	{
+		String[] result = new String[versions.length];
+		for (int i=0 ; i<versions.length ; i++)
+			result[i] = processVersion(versions[i]);
+
+		return result;
+	}
+
+	protected String getPackageVersion()
+	{
+		return processVersion(packageVersion);
+	}
+
 	protected File getPackageFile()
 	{
-		return new File(targetDir, String.format("%s_%s-%s_all.deb", packageName, packageVersion, packageRevision));
+		return new File(targetDir, String.format("%s_%s-%s_all.deb", packageName, getPackageVersion(), packageRevision));
 	}
 
 	protected void runProcess(String[] cmd, boolean throw_on_failure) throws ExecuteException, IOException, MojoExecutionException
