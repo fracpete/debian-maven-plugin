@@ -1,4 +1,4 @@
-package nl.holmes.mkdeb;
+package net.sf.debianmaven;
 
 import java.io.IOException;
 
