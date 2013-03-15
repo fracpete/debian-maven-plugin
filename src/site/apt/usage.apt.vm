@@ -33,22 +33,6 @@ Usage
 </project>
 +---------------------
 
-	You probably also need to specify the location of the debian-maven-plugin repository:
-
-+---------------------
-<project>
-  ...
-  <pluginRepositories>
-    <pluginRepository>
-      <id>debian-maven.sourceforge.net</id>
-      <url>http://downloads.sourceforge.net/project/debian-maven/m2repo</url>
-      <snapshots><enabled>false</enabled></snapshots>
-    </pluginRepository>
-  </pluginRepositories>
-  ...
-</project>
-+---------------------
-
 	The plugin accepts the following configuration parameters (most of them have reasonable default values):
 
 *------------------*-----------------------*------------------------*-----------*------------------------*

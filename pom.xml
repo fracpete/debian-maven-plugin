@@ -2,7 +2,19 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<!--
 
-	  Before deploying, add a <server> entry to ~/.m2/settings.xml:
+	  Before deploying, add the <server> entries to ~/.m2/settings.xml:
+
+	  <server>
+	    <id>sonatype-nexus-staging</id>
+	    <username>USERNAME</username>
+	    <password>PASSWORD</password>
+	  </server>
+
+	  <server>
+	    <id>sonatype-nexus-snapshots</id>
+	    <username>USERNAME</username>
+	    <password>PASSWORD</password>
+	  </server>
 
 	  <server>
 	    <id>debian-maven.sourceforge.net</id>
@@ -10,9 +22,25 @@
 	    <password>PASSWORD</password>
 	  </server>
 
-	  To deploy release files, do:
+	  To publish a snapshot, do:
 
-	    mvn -P release deploy site-deploy
+	    mvn -P release clean deploy
+
+	  To stage a release, do:
+
+	    mvn -P release release:clean
+	    mvn -P release release:prepare
+	    mvn -P release release:perform
+
+	  To publish the site, do:
+
+	    mvn site-deploy
+
+	  If you experience certificate errors, add the following
+	  parameters to the Maven command line:
+
+	    -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts
+	    -Djavax.net.ssl.trustStorePassword=changeit
 
 	-->
 	<modelVersion>4.0.0</modelVersion>
@@ -21,19 +49,29 @@
 	<version>1.0.5-SNAPSHOT</version>
 	<packaging>maven-plugin</packaging>
 	<name>Debian Maven Plugin</name>
+
+	<parent>
+		<groupId>org.sonatype.oss</groupId>
+		<artifactId>oss-parent</artifactId>
+		<version>7</version>
+	</parent>
+
 	<description>
 		This plugin helps building DEB packages from Maven projects.
 		The packages can be used in DEB-based operating systems such
 		as Debian and Ubuntu. The plugin uses external Debian tools
 		to do the actual packaging.
 	</description>
+
 	<url>http://debian-maven.sourceforge.net</url>
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.5</maven.compiler.source>
 		<maven.compiler.target>1.5</maven.compiler.target>
 	</properties>
 	<inceptionYear>2012</inceptionYear>
+
 	<licenses>
 		<license>
 			<name>GNU General Public License 3.0</name>
@@ -44,17 +82,20 @@
 			</comments>
 		</license>
 	</licenses>
+
 	<scm>
 		<connection>scm:git:https://git.code.sf.net/p/debian-maven/code</connection>
 		<developerConnection>scm:git:ssh://git.code.sf.net/p/debian-maven/code</developerConnection>
 		<url>http://sourceforge.net/p/debian-maven/code</url>
 	</scm>
+
 	<developers>
 		<developer>
 			<name>Wowtor</name>
 			<email>wowtor@users.sourceforge.net</email>
 		</developer>
 	</developers>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.maven</groupId>
@@ -92,16 +133,20 @@
 			<version>4.01</version>
 		</dependency>
 	</dependencies>
+
 	<distributionManagement>
+<!--
 		<repository>
 			<id>debian-maven.sourceforge.net</id>
 			<url>scp://shell.sourceforge.net/home/frs/project/d/de/debian-maven/m2repo</url>
 		</repository>
+-->
 		<site>
 			<id>debian-maven.sourceforge.net</id>
 			<url>scp://shell.sourceforge.net/home/project-web/debian-maven/htdocs</url>
 		</site>
 	</distributionManagement>
+
 	<build>
 		<extensions>
 			<extension>
@@ -120,6 +165,7 @@
 			</plugin>
 		</plugins>
 	</build>
+
 	<reporting>
 		<plugins>
 			<plugin>
@@ -148,6 +194,7 @@
 			</plugin>
 		</plugins>
 	</reporting>
+
 	<profiles>
 		<profile>
 			<id>release</id>
@@ -162,6 +209,17 @@
 								<id>attach-sources</id>
 								<phase>verify</phase>
 								<goals><goal>jar-no-fork</goal></goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<version>2.9</version>
+						<executions>
+							<execution>
+								<id>attach-javadoc</id>
+								<phase>verify</phase>
+								<goals><goal>jar</goal></goals>
 							</execution>
 						</executions>
 					</plugin>
