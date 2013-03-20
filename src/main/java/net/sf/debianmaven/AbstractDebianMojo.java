@@ -55,8 +55,11 @@ public abstract class AbstractDebianMojo extends AbstractMojo
 	/** @parameter default-value="${basedir}/target/deb" */
 	protected File stageDir;
 
-	/** @parameter default-value="${basedir}/pom.xml" */
-	private File snapshotRevisionFile;
+	/**
+	 * @parameter expression="${deb.package.snapshotRevFile}"
+	 * @since 1.0.5
+	 */
+	private File snapshotRevisionFile = null;
 
 	private static final DateFormat datefmt = new SimpleDateFormat("yyyyMMddHHmm");
 
@@ -65,7 +68,13 @@ public abstract class AbstractDebianMojo extends AbstractMojo
 	protected String processVersion(String version)
 	{
 		if (snapshotRevision == null)
-			snapshotRevision = "+" + datefmt.format(new Date(snapshotRevisionFile.lastModified()));
+		{
+			Date revtime = snapshotRevisionFile != null
+					? new Date(snapshotRevisionFile.lastModified())
+					: new Date();
+
+			snapshotRevision = "+" + datefmt.format(revtime);
+		}
 
 		return version.replaceAll("-SNAPSHOT", snapshotRevision);
 	}

@@ -52,6 +52,8 @@ Usage
 *------------------+-----------------------+------------------------+-----------+------------------------+
   packageDescription | deb.package.description | Extended package description | String  | \$\{project.description\}
 *------------------+-----------------------+------------------------+-----------+------------------------+
+  snapshotRevisionFile| deb.package.snapshotRevFile | When building snapshot packages, append the modification time of this file to the version number. | File | The default is to use the system time.
+*------------------+-----------------------+------------------------+-----------+------------------------+
   packageDependencies |                        | Dependencies to other packages | String\[\] |
 *------------------+-----------------------+------------------------+-----------+------------------------+
   projectUrl       | deb.project.url           | Project website        | String        | \$\{project.organization.url\}
