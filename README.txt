@@ -7,6 +7,15 @@ http://debian-maven.sf.net/
 Related sites
 -------------
 
+Sourceforge project page:
+http://sourceforge.net/projects/debian-maven/
+
+Sonatype Nexus web interface:
+https://oss.sonatype.org/
+
+Sonatype ticket system:
+https://issues.sonatype.org/
+
 Sonatype snapshot Maven repository:
 https://oss.sonatype.org/content/repositories/snapshots/
 
@@ -18,6 +27,9 @@ https://oss.sonatype.org/content/groups/public/
 
 Sourceforge Maven repository (obsolete):
 http://downloads.sourceforge.net/project/debian-maven/m2repo
+
+Sonatype repository usage guide:
+https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide
 
 
 Deploying
