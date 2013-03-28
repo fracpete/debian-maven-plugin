@@ -4,6 +4,22 @@ DEBIAN MAVEN PLUGIN
 http://debian-maven.sf.net/
 
 
+Related sites
+-------------
+
+Sonatype snapshot Maven repository:
+https://oss.sonatype.org/content/repositories/snapshots/
+
+Sonatype releases Maven repository:
+https://oss.sonatype.org/content/repositories/releases/
+
+Sonatype combined snapshot/releases Maven repository:
+https://oss.sonatype.org/content/groups/public/
+
+Sourceforge Maven repository (obsolete):
+http://downloads.sourceforge.net/project/debian-maven/m2repo
+
+
 Deploying
 ---------
 
