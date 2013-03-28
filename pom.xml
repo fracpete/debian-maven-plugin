@@ -25,15 +25,17 @@
 
 	    mvn -P release clean deploy
 
+	  To publish the site, do:
+
+	    ssh -t USERNAME,debian-maven@shell.sf.net create
+	    mvn site-deploy
+
 	  To stage a release, do:
 
 	    mvn -P release release:clean
-	    mvn -P release release:prepare
+	    mvn -P release -Dusername=SCM_USERNAME release:prepare
+	    ssh -t USERNAME,debian-maven@shell.sf.net create
 	    mvn -P release release:perform
-
-	  To publish the site, do:
-
-	    mvn site-deploy
 
 	  If you experience certificate errors, add the following
 	  parameters to the Maven command line:
@@ -163,6 +165,43 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>2.9</version>
+					<configuration>
+						<tags>
+							<tag>
+								<name>goal</name>
+								<placement>t</placement>
+								<head>Goal name of this mojo:</head>
+							</tag>
+							<tag>
+								<name>phase</name>
+								<placement>t</placement>
+								<head>Default phase:</head>
+							</tag>
+							<tag>
+								<name>requiresDependencyResolution</name>
+								<placement>t</placement>
+								<head>This goal requires dependencies to be resolved.</head>
+							</tag>
+							<tag>
+								<name>parameter</name>
+								<placement>f</placement>
+								<head>Parameter:</head>
+							</tag>
+							<tag>
+								<name>required</name>
+								<placement>f</placement>
+								<head>Required parameter</head>
+							</tag>
+						</tags>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
 
 	<reporting>
@@ -187,9 +226,44 @@
 				<version>2.3</version>
 			</plugin>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.8.1</version>
+				<!--
+				  NOTE: this configuration is (or should be)
+				  a duplicate of the javadoc configuration in
+				  build.pluginManagement
+
+				  Configuration must be entered twice; see:
+				  http://jira.codehaus.org/browse/MSITE-516
+				-->
+					<configuration>
+						<tags>
+							<tag>
+								<name>goal</name>
+								<placement>t</placement>
+								<head>Goal name of this mojo:</head>
+							</tag>
+							<tag>
+								<name>phase</name>
+								<placement>t</placement>
+								<head>Default phase:</head>
+							</tag>
+							<tag>
+								<name>requiresDependencyResolution</name>
+								<placement>t</placement>
+								<head>This goal requires dependencies to be resolved.</head>
+							</tag>
+							<tag>
+								<name>parameter</name>
+								<placement>f</placement>
+								<head>Parameter:</head>
+							</tag>
+							<tag>
+								<name>required</name>
+								<placement>f</placement>
+								<head>Required parameter</head>
+							</tag>
+						</tags>
+					</configuration>
 			</plugin>
 		</plugins>
 	</reporting>
@@ -213,7 +287,6 @@
 					</plugin>
 					<plugin>
 						<artifactId>maven-javadoc-plugin</artifactId>
-						<version>2.9</version>
 						<executions>
 							<execution>
 								<id>attach-javadoc</id>
