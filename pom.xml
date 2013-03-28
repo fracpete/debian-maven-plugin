@@ -45,7 +45,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.sf.debian-maven</groupId>
 	<artifactId>debian-maven-plugin</artifactId>
-	<version>1.0.5</version>
+	<version>1.0.6-SNAPSHOT</version>
 	<packaging>maven-plugin</packaging>
 	<name>Debian Maven Plugin</name>
 
