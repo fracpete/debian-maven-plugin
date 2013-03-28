@@ -225,7 +225,7 @@
 
 	<profiles>
 		<profile>
-			<id>release</id>
+			<id>fullbuild</id>
 			<build>
 				<plugins>
 					<plugin>
