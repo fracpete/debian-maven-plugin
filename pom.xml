@@ -1,49 +1,4 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<!--
-
-	  Before deploying, add the <server> entries to ~/.m2/settings.xml:
-
-	  <server>
-	    <id>sonatype-nexus-staging</id>
-	    <username>USERNAME</username>
-	    <password>PASSWORD</password>
-	  </server>
-
-	  <server>
-	    <id>sonatype-nexus-snapshots</id>
-	    <username>USERNAME</username>
-	    <password>PASSWORD</password>
-	  </server>
-
-	  <server>
-	    <id>debian-maven.sourceforge.net</id>
-	    <username>USERNAME,debian-maven</username>
-	    <password>PASSWORD</password>
-	  </server>
-
-	  To publish a snapshot, do:
-
-	    mvn -P release clean deploy
-
-	  To publish the site, do:
-
-	    ssh -t USERNAME,debian-maven@shell.sf.net create
-	    mvn site-deploy
-
-	  To stage a release, do:
-
-	    mvn -P release release:clean
-	    mvn -P release -Dusername=SCM_USERNAME release:prepare
-	    ssh -t USERNAME,debian-maven@shell.sf.net create
-	    mvn -P release release:perform
-
-	  If you experience certificate errors, add the following
-	  parameters to the Maven command line:
-
-	    -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts
-	    -Djavax.net.ssl.trustStorePassword=changeit
-
-	-->
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.sf.debian-maven</groupId>
 	<artifactId>debian-maven-plugin</artifactId>
