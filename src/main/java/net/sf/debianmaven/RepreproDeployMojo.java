@@ -31,7 +31,7 @@ public class RepreproDeployMojo extends AbstractRepreproMojo
 			getLog().info("Skipping deployment of non-existent package: "+pkgfile);
 	}
 
-	public void execute() throws MojoExecutionException
+	protected void executeDebMojo() throws MojoExecutionException
 	{
 		try
 		{

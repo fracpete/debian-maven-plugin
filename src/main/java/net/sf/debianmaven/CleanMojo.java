@@ -13,7 +13,7 @@ import org.apache.maven.plugin.MojoExecutionException;
  */
 public class CleanMojo extends AbstractDebianMojo
 {
-	public void execute() throws MojoExecutionException
+	protected void executeDebMojo() throws MojoExecutionException
 	{
 		try
 		{

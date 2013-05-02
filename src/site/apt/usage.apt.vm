@@ -83,6 +83,15 @@ Usage
   skipDeployMissing| deb.deploy.skipMissing    | Skip package deployment if the package does not exist | Boolean | true
 *------------------+-----------------------+------------------------+-----------+------------------------+
 
+	The plugin execution is skipped automatically if the operating system is not linux.
+The plugin execution can be skipped explicitly by providing the system property <<<skipDeb>>>,
+and it is forced to run regardless the operating system if <<<runDeb>>> is provided.
+Example:
+
++--------------------
+mvn -DskipDeb
++--------------------
+
 * Adding package content
 
 ** Adding JARs (and other attached artifacts and dependencies)

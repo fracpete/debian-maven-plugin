@@ -450,7 +450,7 @@ public class PackageMojo extends AbstractDebianMojo
 			throw new MojoExecutionException("Deprecated parameter used: "+paramName);
 	}
 
-	public void execute() throws MojoExecutionException
+	protected void executeDebMojo() throws MojoExecutionException
 	{
 		checkDeprecated(includeJar != null, "includeJar");
 		checkDeprecated(includeJars != null && includeJars.length > 0, "includeJars");

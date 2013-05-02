@@ -16,6 +16,9 @@ import org.apache.maven.plugin.MojoExecutionException;
 
 public abstract class AbstractDebianMojo extends AbstractMojo
 {
+	private static final String SKIP_DEB_PROPERTY = "skipDeb";
+	private static final String RUN_DEB_PROPERTY = "runDeb";
+
 	/**
 	 * @parameter expression="${deb.package.name}" default-value="${project.artifactId}"
 	 */
@@ -116,5 +119,22 @@ public abstract class AbstractDebianMojo extends AbstractMojo
 			if (throw_on_failure)
 				throw new MojoExecutionException("Process returned non-zero exit code: "+cmdline);
 		}
+	}
+
+	protected abstract void executeDebMojo() throws MojoExecutionException;
+
+	public final void execute() throws MojoExecutionException
+	{
+		if (System.getProperties().containsKey(RUN_DEB_PROPERTY))
+		{
+			getLog().info("debian-maven execution forced (-DrunDeb)");
+			executeDebMojo();
+		}
+		else if (System.getProperties().containsKey(SKIP_DEB_PROPERTY))
+			getLog().info("debian-maven execution skipped (-DskipDeb)");
+		else if (!System.getProperty("os.name").equals("Linux"))
+			getLog().warn("debian-maven execution skipped (non-linux OS)");
+		else
+			executeDebMojo();
 	}
 }

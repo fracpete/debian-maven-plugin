@@ -21,7 +21,7 @@ public class InstallMojo extends AbstractDebianMojo
 			getLog().warn("Debian package file not found; doing nothing.");
 	}
 
-	public void execute() throws MojoExecutionException
+	protected void executeDebMojo() throws MojoExecutionException
 	{
 		try
 		{

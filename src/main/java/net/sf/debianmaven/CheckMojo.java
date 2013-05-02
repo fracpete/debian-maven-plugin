@@ -19,7 +19,7 @@ public class CheckMojo extends AbstractDebianMojo
 		runProcess(new String[]{"lintian", getPackageFile().toString()}, true);
 	}
 
-	public void execute() throws MojoExecutionException
+	protected void executeDebMojo() throws MojoExecutionException
 	{
 		try
 		{
