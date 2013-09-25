@@ -291,7 +291,7 @@ public class PackageMojo extends AbstractDebianMojo
 		out.println("See /usr/share/common-licenses/GPL");
 		out.close();
 	}
-	
+
 	private void generateControl(File target) throws IOException
 	{
 		getLog().info("Generating control file: "+target);
@@ -310,17 +310,30 @@ public class PackageMojo extends AbstractDebianMojo
 
 		out.printf("Installed-Size: %d\n", 1 + FileUtils.sizeOfDirectory(stageDir) / 1024);
 
-		out.printf("Maintainer: %s <%s>\n", maintainerName, maintainerEmail);
+		if (maintainerName != null || maintainerEmail != null)
+		{
+			out.print("Maintainer:");
+			if (maintainerName != null)
+				out.print(" "+maintainerName);
+			if (maintainerEmail != null)
+				out.printf(" <%s>", maintainerEmail);
+			out.println();
+		}
+
 		if (projectUrl != null)
 			out.println("Homepage: "+projectUrl);
 
 		if (packageTitle != null) {
 			if (packageTitle.length() > 60)
-				getLog().warn("Package title is longer than the upper limit of 60 characters.");
-			out.println("Description: "+packageTitle);
-		}
+			{
+				getLog().warn("Package title will be truncated to the upper limit of 60 characters.");
+				out.println("Description: "+packageTitle.substring(0, 60));
+			}
+			else
+				out.println("Description: "+packageTitle);
 
-		out.println(getFormattedDescription());
+			out.println(getFormattedDescription());
+		}
 
 		out.close();
 	}
