@@ -196,7 +196,8 @@ public class PackageMojo extends AbstractDebianMojo
 		FileUtils.copyFile(src, trg);
 
 		String linkname = src.getName().replaceFirst("-"+a.getVersion(), "");
-		createSymlink(new File(targetLibDir, linkname), a.getFile().getName());
+		if (!linkname.equals(src.getName()))
+			createSymlink(new File(targetLibDir, linkname), a.getFile().getName());
 
 		return trg;
 	}
