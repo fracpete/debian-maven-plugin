@@ -148,6 +148,7 @@ public class PackageMojo extends AbstractDebianMojo
 	{
 		if (symlink.exists())
 			symlink.delete();
+
 		runProcess(new String[]{"ln", "-s", target, symlink.toString()}, true);
 	}
 
@@ -195,8 +196,9 @@ public class PackageMojo extends AbstractDebianMojo
 		File trg = new File(targetLibDir, src.getName());
 		FileUtils.copyFile(src, trg);
 
-		String linkname = src.getName().replaceFirst("-"+a.getVersion(), "");
-		createSymlink(new File(targetLibDir, linkname), a.getFile().getName());
+		String linkname = src.getName().replaceFirst("-"+a.getBaseVersion(), "");
+		if (!linkname.equals(src.getName()));
+			createSymlink(new File(targetLibDir, linkname), a.getFile().getName());
 
 		return trg;
 	}
