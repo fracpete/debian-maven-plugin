@@ -25,6 +25,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.5</maven.compiler.source>
 		<maven.compiler.target>1.5</maven.compiler.target>
+		<javadocPluginVersion>2.9</javadocPluginVersion>
 	</properties>
 	<inceptionYear>2012</inceptionYear>
 
@@ -124,7 +125,7 @@
 			<plugins>
 				<plugin>
 					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>2.9</version>
+					<version>${javadocPluginVersion}</version>
 					<configuration>
 						<tags>
 							<tag>
@@ -182,6 +183,7 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>${javadocPluginVersion}</version>
 				<!--
 				  NOTE: this configuration is (or should be)
 				  a duplicate of the javadoc configuration in
@@ -242,6 +244,7 @@
 					</plugin>
 					<plugin>
 						<artifactId>maven-javadoc-plugin</artifactId>
+						<version>${javadocPluginVersion}</version>
 						<executions>
 							<execution>
 								<id>attach-javadoc</id>
