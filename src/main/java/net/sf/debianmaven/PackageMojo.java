@@ -196,10 +196,10 @@ public class PackageMojo extends AbstractDebianMojo
 		File trg = new File(targetLibDir, src.getName());
 		FileUtils.copyFile(src, trg);
 
-		//TODO: which version should we use? using both versions for now...
-		String linkname = src.getName();
-		linkname = linkname.replaceFirst("-"+a.getBaseVersion(), "");
-		linkname = linkname.replaceFirst("-"+a.getVersion(), "");
+		//TODO: which version should we use? trying both versions for now...
+		String linkname = src.getName().replaceFirst("-"+a.getBaseVersion(), "");
+		if (linkname.equals(src.getName()))
+			linkname = linkname.replaceFirst("-"+a.getVersion(), "");
 
 		if (!linkname.equals(src.getName()))
 			createSymlink(new File(targetLibDir, linkname), a.getFile().getName());
