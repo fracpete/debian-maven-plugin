@@ -242,7 +242,11 @@ public class PackageMojo extends AbstractDebianMojo
 		else
 		{
 			getLog().info("Copying regular project artifacts and dependencies.");
-			artifacts.addAll((Collection<Artifact>)project.getRuntimeArtifacts());
+			for (Artifact a : (Collection<Artifact>)project.getArtifacts())
+			{
+				if (a.getScope().equals("runtime") || a.getScope().equals("compile"))
+					artifacts.add(a);
+			}
 		}
 
 		/*
