@@ -235,7 +235,10 @@ public class PackageMojo extends AbstractDebianMojo
 		File targetLibDir = createTargetLibDir();
 
 		Collection<Artifact> artifacts = new ArrayList<Artifact>();
-		artifacts.add(project.getArtifact());
+
+		// consider the current artifact only if it exists (e.g. pom, war packaging generates no artifact)
+		if (project.getArtifact().getFile() != null)
+			artifacts.add(project.getArtifact());
 
 		if (excludeAllDependencies)
 			getLog().info("Copying regular project artifacts but not dependencies.");
