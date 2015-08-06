@@ -76,7 +76,7 @@ Usage
 *------------------+-----------------------+------------------------+-----------+------------------------+
   repository       | deb.repository.location | Location of the Debian repository | File |
 *------------------+-----------------------+------------------------+-----------+------------------------+
-  repositoryBranch | deb.repository.branch     | The codename of the distribution branch (e.g., lenny, natty, etc.) | String | experimental
+  codenames        |                           | The codenames of the distribution branches (e.g., lenny, natty, etc.) | String | experimental
 *------------------+-----------------------+------------------------+-----------+------------------------+
   repreproConfigurotionDir | deb.reprepro.config | Reprepro configuration directory | File |
 *------------------+-----------------------+------------------------+-----------+------------------------+
