@@ -60,9 +60,9 @@ Usage
 *------------------+-----------------------+------------------------+-----------+------------------------+
   projectOrganization | deb.project.organization | Organization for Debian control file | String | \$\{project.organization.name\}
 *------------------+-----------------------+------------------------+-----------+------------------------+
-  maintainerName   | deb.maintatier.name       | Package maintainer's name | String     | \$\{project.developers\[0\].name\}
+  maintainerName   | deb.maintainer.name       | Package maintainer's name | String     | \$\{project.developers\[0\].name\}
 *------------------+-----------------------+------------------------+-----------+------------------------+
-  maintainerEmail  | deb.maintatier.email      | Package maintainer's email address | String | \$\{project.developers\[0\].email\}
+  maintainerEmail  | deb.maintainer.email      | Package maintainer's email address | String | \$\{project.developers\[0\].email\}
 *------------------+-----------------------+------------------------+-----------+------------------------+
   includeArtifacts |                           | Artifacts to be included, identified by their filenames. | String[] | The project artifact and its dependencies.
 *------------------+-----------------------+------------------------+-----------+------------------------+
