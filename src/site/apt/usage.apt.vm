@@ -68,6 +68,8 @@ Usage
 *------------------+-----------------------+------------------------+-----------+------------------------+
   excludeArtifacts |                           | Artifacts to be excluded (takes precedence over includeArtifacts). | String[] |
 *------------------+-----------------------+------------------------+-----------+------------------------+
+  excludeArtifactsRegExp |                           | Regular expression to match against artifacts to be excluded (takes precedence over includeArtifacts). Applies the expressions to "groupId:artifactId:classifier" | String[] |
+*------------------+-----------------------+------------------------+-----------+------------------------+
   excludeAllArtifacts |                        | Exclude all regular artifacts (attached artifacts are not affected) | Boolean | false
 *------------------+-----------------------+------------------------+-----------+------------------------+
   excludeAllDependencies |                     | Exclude all dependencies | Boolean | false
@@ -101,7 +103,10 @@ The project artifact and its dependencies can be <<excluded>> from the package b
 The parameter <<<excludeAllDependencies>>> does the same, but only for dependencies.
 The inclusion of attached artifacts is governed by <<<includeAttachedArtifacts>>>.
 If <<<includeArtifacts>>> is provided, only those listed artifacts are included.
-The artifacts in <<<excludeArtifacts>>> are excluded from the Debian package.
+The artifacts in <<<excludeArtifacts>>> (supplied in via nested <<<\<param\>\</param\>>>> tags)
+are excluded from the Debian package.
+You can also supply regular expressions to exclude artifacts using <<<excludeArtifactsRegExp>>>
+(the actual regular expressions are supplied in nested <<<\<param\>\</param\>>>> tags).
 Artifacts will be accompanied by a symbolic link, which enables reference without the version number.
 
 	For the project artifact and each of its dependencies, a file is

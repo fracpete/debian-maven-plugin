@@ -1,5 +1,18 @@
 package net.sf.debianmaven;
 
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.collections15.MultiMap;
+import org.apache.commons.collections15.multimap.MultiHashMap;
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.DefaultExecutor;
+import org.apache.commons.exec.ExecuteException;
+import org.apache.commons.exec.PumpStreamHandler;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.project.MavenProject;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -17,20 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
+import java.util.regex.Pattern;
 import java.util.zip.GZIPOutputStream;
-
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.collections15.MultiMap;
-import org.apache.commons.collections15.multimap.MultiHashMap;
-import org.apache.commons.exec.CommandLine;
-import org.apache.commons.exec.DefaultExecutor;
-import org.apache.commons.exec.ExecuteException;
-import org.apache.commons.exec.PumpStreamHandler;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.project.MavenProject;
 
 /**
  * Generates a Debian package.
@@ -113,6 +114,14 @@ public class PackageMojo extends AbstractDebianMojo
 	protected Set<String> excludeArtifacts;
 
 	/**
+	 * @parameter
+	 * @since 1.0.7
+	 */
+	protected Set<String> excludeArtifactsRegExp;
+
+	protected Set<Pattern> excludeArtifactsPattern;
+
+	/**
 	 * @parameter default-value="false"
 	 * @since 1.0.3
 	 */
@@ -171,9 +180,47 @@ public class PackageMojo extends AbstractDebianMojo
 		createSymlink(new File(targetLibDir, String.format("%s.inc", artifactId)), deplist.getName());
 	}
 
+	/**
+	 * Turns the supplied regular expressions from excludeArtifactsRegExp into {@link Pattern} objects.
+	 * @return the compiled Pattern objects
+	 */
+	private Set<Pattern> getExcludeArtifactsPattern()
+	{
+		if (excludeArtifactsPattern == null)
+		{
+			excludeArtifactsPattern = new HashSet<>();
+			for (String regexp: excludeArtifactsRegExp)
+			{
+				try
+				{
+					Pattern p = Pattern.compile(regexp);
+					excludeArtifactsPattern.add(p);
+				}
+				catch (Exception e)
+				{
+					getLog().error("Failed to parse excludeArtifactsPattern '" + regexp + "'!", e);
+				}
+			}
+		}
+		return excludeArtifactsPattern;
+	}
+
 	private boolean includeArtifact(Artifact a)
 	{
 		boolean doExclude = excludeArtifacts != null && (a.getDependencyTrail() == null || Collections.disjoint(a.getDependencyTrail(), excludeArtifacts));
+		if (!doExclude && (getExcludeArtifactsPattern().size() > 0))
+		{
+			for (Pattern p: getExcludeArtifactsPattern())
+			{
+				String aStr = a.getGroupId() + ":" + a.getArtifactId() + ":" + (a.hasClassifier() ? a.getClassifier() : "");
+				if (p.matcher(aStr).matches())
+				{
+					getLog().debug(aStr + " excluded using pattern: " + p.pattern());
+					doExclude = true;
+					break;
+				}
+			}
+		}
 		if (doExclude)
 			return false;
 
