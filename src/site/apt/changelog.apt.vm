@@ -1,0 +1,24 @@
+	---------
+	${project.name} :: Changelog
+	---------
+
+Changelog
+
+* 1.0.8
+
+      * switched from <org.apache.commons:commons-exec> to
+        <com.github.fracpete:processoutput4j> to handle paths with blanks
+        when executing the Debian package tools
+
+	[]
+
+* 1.0.7
+
+      * forked {{http://debian-maven.sourceforge.net}} project
+
+      * documentation is now available at {{https://fracpete.github.io/debian-maven-plugin/}}
+
+      * added <excludeArtifactsRegExp> parameter to allow matching of artifacts
+        via regular expressions
+
+	[]

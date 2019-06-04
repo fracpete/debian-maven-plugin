@@ -1,5 +1,12 @@
 package net.sf.debianmaven;
 
+import com.github.fracpete.processoutput4j.core.StreamingProcessOutputType;
+import com.github.fracpete.processoutput4j.core.StreamingProcessOwner;
+import com.github.fracpete.processoutput4j.output.CollectingProcessOutput;
+import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.logging.Log;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -7,17 +14,32 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 
-import org.apache.commons.exec.CommandLine;
-import org.apache.commons.exec.DefaultExecutor;
-import org.apache.commons.exec.ExecuteException;
-import org.apache.commons.exec.PumpStreamHandler;
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecutionException;
-
 public abstract class AbstractDebianMojo extends AbstractMojo
 {
 	private static final String SKIP_DEB_PROPERTY = "skipDeb";
 	private static final String RUN_DEB_PROPERTY = "runDeb";
+
+	public static class LogOutput implements StreamingProcessOwner
+	{
+		private Log log;
+
+		public LogOutput(Log log)
+		{
+			this.log = log;
+		}
+
+		public StreamingProcessOutputType getOutputType() {
+			return StreamingProcessOutputType.BOTH;
+		}
+
+		public void processOutput(String line, boolean stdout) {
+			if (stdout)
+				log.info(line);
+			else
+				log.error(line);
+		}
+	}
+
 
 	/**
 	 * @parameter expression="${deb.package.name}" default-value="${project.artifactId}"
@@ -91,6 +113,11 @@ public abstract class AbstractDebianMojo extends AbstractMojo
 		return result;
 	}
 
+	protected File newFile(File dir, String name)
+	{
+		return new File(dir.getAbsolutePath() + File.separator + name);
+	}
+
 	protected String getPackageVersion()
 	{
 		return processVersion(packageVersion);
@@ -98,26 +125,37 @@ public abstract class AbstractDebianMojo extends AbstractMojo
 
 	protected File getPackageFile()
 	{
-		return new File(targetDir, String.format("%s_%s-%s_all.deb", packageName, getPackageVersion(), packageRevision));
+		return newFile(targetDir, String.format("%s_%s-%s_all.deb", packageName, getPackageVersion(), packageRevision));
 	}
 
-	protected void runProcess(String[] cmd, boolean throw_on_failure) throws ExecuteException, IOException, MojoExecutionException
+	protected void runProcess(String[] cmd, boolean throw_on_failure) throws IOException, MojoExecutionException
 	{
-		CommandLine cmdline = new CommandLine(cmd[0]);
-		cmdline.addArguments(Arrays.copyOfRange(cmd, 1, cmd.length));
+		ProcessBuilder builder = new ProcessBuilder();
+		builder.command(cmd);
 
-		getLog().info("Start process: "+cmdline);
+		getLog().info("Start process: " + Arrays.asList(cmd));
 
-		PumpStreamHandler streamHandler = new PumpStreamHandler(new LogOutputStream(getLog()));
-		DefaultExecutor exec = new DefaultExecutor();
-		exec.setStreamHandler(streamHandler);
-		int exitval = exec.execute(cmdline);
-		if (exitval != 0)
+		try
 		{
-			getLog().warn("Exit code "+exitval);
-			
-			if (throw_on_failure)
-				throw new MojoExecutionException("Process returned non-zero exit code: "+cmdline);
+			CollectingProcessOutput output = new CollectingProcessOutput();
+			output.monitor(builder);
+			int exitval = output.getExitCode();
+			if (exitval != 0)
+			{
+				getLog().warn("Exit code: " + exitval);
+				getLog().warn("stderr:\n" + output.getStdErr());
+				getLog().warn("stdout:\n" + output.getStdOut());
+
+				if (throw_on_failure)
+					throw new MojoExecutionException("Process returned non-zero exit code: " + Arrays.asList(cmd));
+			}
+		}
+		catch (MojoExecutionException e)
+		{
+			throw e;
+		}
+		catch (Exception e) {
+		  throw new IOException(e);
 		}
 	}
 

@@ -1,12 +1,9 @@
 package net.sf.debianmaven;
 
+import com.github.fracpete.processoutput4j.output.CollectingProcessOutput;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections15.MultiMap;
 import org.apache.commons.collections15.multimap.MultiHashMap;
-import org.apache.commons.exec.CommandLine;
-import org.apache.commons.exec.DefaultExecutor;
-import org.apache.commons.exec.ExecuteException;
-import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.artifact.Artifact;
@@ -21,6 +18,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -153,7 +151,7 @@ public class PackageMojo extends AbstractDebianMojo
 		return targetLibDir;
 	}
 
-	private void createSymlink(File symlink, String target) throws ExecuteException, MojoExecutionException, IOException
+	private void createSymlink(File symlink, String target) throws MojoExecutionException, IOException
 	{
 		if (symlink.exists())
 			symlink.delete();
@@ -459,7 +457,7 @@ public class PackageMojo extends AbstractDebianMojo
 		out.close();
 	}
 	
-	private void generateManPages() throws MojoExecutionException, ExecuteException, IOException
+	private void generateManPages() throws MojoExecutionException, IOException
 	{
 		File source = new File(sourceDir, "man");
 		if (!source.exists())
@@ -478,26 +476,36 @@ public class PackageMojo extends AbstractDebianMojo
 				File target = new File(stageDir, String.format("usr/share/man/man%c/%s.gz", section, f.getName()));
 				target.getParentFile().mkdirs();
 
-				CommandLine cmdline = new CommandLine("groff");
-				cmdline.addArguments(new String[]{"-man", "-Tascii", f.getPath()});
+				String[] cmd = new String[]{"groff", "-man", "-Tascii", f.getPath()};
+				ProcessBuilder builder = new ProcessBuilder();
+				builder.command(cmd);
+				builder.directory(f.getParentFile());
 
-				getLog().info("Start process: "+cmdline);
+				getLog().info("Start process: " + Arrays.asList(cmd));
 
 				GZIPOutputStream os = new GZIPOutputStream(new FileOutputStream(target));
 				try
 				{
-					PumpStreamHandler streamHandler = new PumpStreamHandler(os, new LogOutputStream(getLog()));
-					DefaultExecutor exec = new DefaultExecutor();
-					exec.setWorkingDirectory(f.getParentFile());
-					exec.setStreamHandler(streamHandler);
-					int exitval = exec.execute(cmdline);
+					CollectingProcessOutput output = new CollectingProcessOutput();
+					output.monitor(builder);
+					int exitval = output.getExitCode();
 					if (exitval == 0)
-						getLog().info("Manual page generated: "+target.getPath());
+						getLog().info("Manual page generated: " + target.getPath());
 					else
 					{
-						getLog().warn("Exit code "+exitval);
-						throw new MojoExecutionException("Process returned non-zero exit code: "+cmdline);
+						getLog().warn("Exit code: " + exitval);
+						getLog().warn("stderr:\n" + output.getStdErr());
+						getLog().warn("stdout:\n" + output.getStdOut());
+						throw new MojoExecutionException("Process returned non-zero exit code: " + Arrays.asList(cmd));
 					}
+				}
+				catch (MojoExecutionException e)
+				{
+					throw e;
+				}
+				catch (Exception e)
+				{
+					throw new IOException(e);
 				}
 				finally
 				{

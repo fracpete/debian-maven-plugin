@@ -4,6 +4,7 @@
 			<item name="Introduction" href="index.html"/>
 			<item name="Goals" href="goals.html"/>
 			<item name="Usage" href="usage.html"/>
+			<item name="Changelog" href="changelog.html"/>
 			<item name="Contact" href="contact.html"/>
 		</menu>
 		<menu ref="reports"/>
