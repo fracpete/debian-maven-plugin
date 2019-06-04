@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>debian-maven-plugin - Debian Maven Plugin :: Goals</title>
+    <title>debian-maven-plugin - Debian Maven Plugin :: Changelog</title>
     <style type="text/css" media="all">
       @import url("./css/maven-base.css");
       @import url("./css/maven-theme.css");
@@ -47,14 +47,14 @@
                           <a href="index.html" title="Introduction">Introduction</a>
             </li>
                   <li class="none">
-            <strong>Goals</strong>
-          </li>
+                          <a href="goals.html" title="Goals">Goals</a>
+            </li>
                   <li class="none">
                           <a href="usage.html" title="Usage">Usage</a>
             </li>
                   <li class="none">
-                          <a href="changelog.html" title="Changelog">Changelog</a>
-            </li>
+            <strong>Changelog</strong>
+          </li>
                   <li class="none">
                           <a href="contact.html" title="Contact">Contact</a>
             </li>
@@ -78,34 +78,17 @@
     <div id="bodyColumn">
       <div id="contentBox">
         <div class="section">
-<h2>Goals<a name="Goals"></a></h2>
-<dl>
-<dt>deb:package</dt>
-<dd>Generate a Debian package.</dd>
-<dt>deb:check</dt>
-<dd>Do some sanity checks using Lintian.</dd>
-<dt>deb:install</dt>
-<dd>Install the package using dpkg.</dd>
-<dt>deb:clean</dt>
-<dd>Cleanup all generated files.</dd>
-<dt>deb:deploy</dt>
-<dd>Deploy the package into a Debian repository using reprepro.</dd></dl></div>
+<h2>Changelog<a name="Changelog"></a></h2>
 <div class="section">
-<h2>System Requirements<a name="System_Requirements"></a></h2>
-<table border="1" class="bodyTable">
-<tr class="a">
-<td align="left">Maven</td>
-<td align="left">3.x.x</td></tr>
-<tr class="b">
-<td align="left">JDK</td>
-<td align="left">1.8</td></tr></table>
-<p>Debian package management tools are also required for proper operation:</p>
+<h3>1.0.8<a name="a1.0.8"></a></h3>
 <ul>
-<li>dpkg-deb (goal: package)</li>
-<li>fakeroot (goal: package)</li>
-<li>lintian (goal: check)</li>
-<li>dpkg, sudo (goal: install)</li>
-<li>reprepro (goal: deploy)</li></ul></div>
+<li>switched from <i>org.apache.commons:commons-exec</i> to <i>com.github.fracpete:processoutput4j</i> to handle paths with blanks when executing the Debian package tools</li></ul></div>
+<div class="section">
+<h3>1.0.7<a name="a1.0.7"></a></h3>
+<ul>
+<li>forked <a class="externalLink" href="http://debian-maven.sourceforge.net">http://debian-maven.sourceforge.net</a> project</li>
+<li>documentation is now available at <a class="externalLink" href="https://fracpete.github.io/debian-maven-plugin/">https://fracpete.github.io/debian-maven-plugin/</a></li>
+<li>added <i>excludeArtifactsRegExp</i> parameter to allow matching of artifacts via regular expressions</li></ul></div></div>
       </div>
     </div>
     <div class="clear">
