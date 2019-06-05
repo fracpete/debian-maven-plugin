@@ -7,6 +7,7 @@ import org.apache.commons.collections15.multimap.MultiHashMap;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.model.License;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 
@@ -27,7 +28,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPOutputStream;
 
@@ -138,16 +138,113 @@ public class PackageMojo extends AbstractDebianMojo
 	protected boolean includeAttachedArtifacts;
 
 	/**
+	 * @parameter default-value="/usr/lib/{PKGNAME}"
+	 * @since 1.0.11
+	 */
+	protected String libDirectory;
+
+	/**
+	 * @parameter default-value="/usr/share/doc/{PKGNAME}"
+	 * @since 1.0.11
+	 */
+	protected String docDirectory;
+
+	/**
+	 * @parameter default-value="/usr/share/man"
+	 * @since 1.0.11
+	 */
+	protected String manDirectory;
+
+	/**
+	 * @parameter default-value="true"
+	 * @since 1.0.11
+	 */
+	protected boolean createSymLinks;
+
+	/**
 	 * The Maven project object
 	 * 
 	 * @parameter expression="${project}"
 	 */
 	private MavenProject project;
 
-	private File createTargetLibDir()
+	/**
+	 * Strips leading and trailing slashes and dots from the path.
+	 * @param path the path to strip
+	 * @return the clean path
+	 */
+	private String stripPath(String path)
 	{
-		File targetLibDir = new File(stageDir, "usr/lib/" + packageName);
-		targetLibDir.mkdirs();
+		// start
+		StringBuilder result = new StringBuilder();
+		boolean start = true;
+		for (int i = 0; i < path.length(); i++)
+		{
+			char c = path.charAt(i);
+			if (start)
+			{
+				if ((c == '/') || (c == '.'))
+					continue;
+				start = false;
+			}
+			result.append(c);
+		}
+		// end
+		path = result.toString();
+		result = new StringBuilder();
+		boolean end = true;
+		for (int i = path.length() - 1; i >= 0; i--)
+		{
+			char c = path.charAt(i);
+			if (end)
+			{
+				if ((c == '/') || (c == '.'))
+					continue;
+				end = false;
+			}
+			result.insert(0, c);
+		}
+		return result.toString();
+	}
+
+	private String getLibDirectory()
+	{
+		String result;
+		if ((libDirectory == null) || libDirectory.isEmpty())
+			result = "/usr/lib/{PGKNAME}";
+		else
+			result = libDirectory;
+		result = result.replace("{PKGNAME}", packageName);
+		return result;
+	}
+
+	private String getDocDirectory()
+	{
+		String result;
+		if ((docDirectory == null) || docDirectory.isEmpty())
+			result = "/usr/share/doc/{PGKNAME}";
+		else
+			result = docDirectory;
+		result = result.replace("{PKGNAME}", packageName);
+		return result;
+	}
+
+	private String getManDirectory()
+	{
+		String result;
+		if ((manDirectory == null) || manDirectory.isEmpty())
+			result = "/usr/share/man";
+		else
+			result = manDirectory;
+		result = result.replace("{PKGNAME}", packageName);
+		return result;
+	}
+
+	private File createTargetLibDir() throws IOException
+	{
+		File targetLibDir = new File(stageDir, stripPath(getLibDirectory()));
+		if (!targetLibDir.mkdirs() && !targetLibDir.exists())
+			throw new IOException("Failed to create lib directory: " + targetLibDir);
 		return targetLibDir;
 	}
 
@@ -168,14 +265,15 @@ public class PackageMojo extends AbstractDebianMojo
 		FileWriter out = new FileWriter(deplist);
 		try
 		{
-			out.write(String.format("artifacts=%s\n", StringUtils.join(new HashSet<String>(dependencies), ":")));
+			out.write(String.format("artifacts=%s\n", StringUtils.join(new HashSet<>(dependencies), ":")));
 		}
 		finally
 		{
 			out.close();
 		}
 
-		createSymlink(new File(targetLibDir, String.format("%s.inc", artifactId)), deplist.getName());
+		if (createSymLinks)
+			createSymlink(new File(targetLibDir, String.format("%s.inc", artifactId)), deplist.getName());
 	}
 
 	/**
@@ -249,7 +347,7 @@ public class PackageMojo extends AbstractDebianMojo
 		if (linkname.equals(src.getName()))
 			linkname = linkname.replaceFirst("-"+a.getVersion(), "");
 
-		if (!linkname.equals(src.getName()))
+		if (createSymLinks && !linkname.equals(src.getName()))
 			createSymlink(new File(targetLibDir, linkname), a.getFile().getName());
 
 		return trg;
@@ -305,11 +403,11 @@ public class PackageMojo extends AbstractDebianMojo
 		 * http://jira.codehaus.org/browse/MNG-4831
 		 */
 
-		Map<String,Artifact> ids = new HashMap<String,Artifact>();
+		Map<String,Artifact> ids = new HashMap<>();
 		for (Artifact a : artifacts)
 			ids.put(a.getId(), a);
 
-		MultiMap<Artifact,String> deps = new MultiHashMap<Artifact,String>();
+		MultiMap<Artifact,String> deps = new MultiHashMap<>();
 		for (Artifact a : artifacts)
 		{
 			if (includeArtifact(a))
@@ -337,19 +435,26 @@ public class PackageMojo extends AbstractDebianMojo
 
 	private void generateCopyright() throws IOException
 	{
-		File targetDocDir = new File(stageDir, "usr/share/doc/" + packageName);
-		targetDocDir.mkdirs();
+		File targetDocDir = new File(stageDir, stripPath(getDocDirectory()));
+		if (!targetDocDir.mkdirs() && !targetDocDir.exists())
+			throw new IOException("Failed to created doc directory: " + targetDocDir);
 
 		PrintWriter out = new PrintWriter(new FileWriter(new File(targetDocDir, "copyright")));
-		out.println(packageName);
-		out.println(projectUrl);
+		out.println("Package: " + packageName);
+		out.println("URL: " + projectUrl);
 		out.println();
 		out.printf("Copyright %d %s\n", Calendar.getInstance().get(Calendar.YEAR), projectOrganization);
 		out.println();
-		out.println("The entire code base may be distributed under the terms of the GNU General");
-		out.println("Public License (GPL).");
-		out.println();
-		out.println("See /usr/share/common-licenses/GPL");
+		for (Object o: project.getLicenses())
+		{
+			License l = (License) o;
+			out.println(l.getName());
+			if ((l.getUrl() != null) && !l.getUrl().isEmpty())
+				out.println(l.getUrl());
+			if ((l.getComments() != null) && !l.getComments().isEmpty())
+				out.println(l.getComments());
+			out.println();
+		}
 		out.close();
 	}
 
@@ -409,7 +514,7 @@ public class PackageMojo extends AbstractDebianMojo
 	
 	private void generateConffiles(File target) throws IOException
 	{
-		List<String> conffiles = new Vector<String>();
+		List<String> conffiles = new ArrayList<>();
 
 		File configDir = new File(stageDir, "etc");
 		if (configDir.exists())
@@ -476,8 +581,9 @@ public class PackageMojo extends AbstractDebianMojo
 			if (f.isFile() && f.getName().matches(".*[.][1-9]$"))
 			{
 				char section = f.getName().charAt(f.getName().length()-1);
-				File target = new File(stageDir, String.format("usr/share/man/man%c/%s.gz", section, f.getName()));
-				target.getParentFile().mkdirs();
+				File target = new File(stageDir, String.format(stripPath(getManDirectory()) + "/man%c/%s.gz", section, f.getName()));
+				if (!target.getParentFile().mkdirs() && !target.exists())
+					throw new IOException("Failed to create man pages directory: " + target);
 
 				String[] cmd = new String[]{"groff", "-man", "-Tascii", f.getPath()};
 				ProcessBuilder builder = new ProcessBuilder();

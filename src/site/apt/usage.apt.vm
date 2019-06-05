@@ -76,6 +76,14 @@ Usage
 *------------------+-----------------------+------------------------+-----------+------------------------+
   includeAttachedArtifacts |                   | Include all attached artifacts. | Boolean | true
 *------------------+-----------------------+------------------------+-----------+------------------------+
+  libDirectory     |                       | The directory to contain the libraries. Placeholder <<<{PKGNAME}>>> gets replaced with value of <<<packageName>>>. | String | /usr/lib/{PGKNAME}
+*------------------+-----------------------+------------------------+-----------+------------------------+
+  docDirectory     |                       | The directory to contain the documentation. Placeholder <<<{PKGNAME}>>> gets replaced with value of <<<packageName>>>. | String | /usr/share/doc/{PGKNAME}
+*------------------+-----------------------+------------------------+-----------+------------------------+
+  manDirectory     |                       | The directory to contain the man pages. Placeholder <<<{PKGNAME}>>> gets replaced with value of <<<packageName>>>. | String | /usr/share/man
+*------------------+-----------------------+------------------------+-----------+------------------------+
+  createSymLinks   |                       | Whether to create symbolic links for jars without the artifact version. | boolean | true
+*------------------+-----------------------+------------------------+-----------+------------------------+
   repository       | deb.repository.location | Location of the Debian repository | File |
 *------------------+-----------------------+------------------------+-----------+------------------------+
   codenames        |                           | The codenames of the distribution branches (e.g., lenny, natty, etc.) | String | experimental

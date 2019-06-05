@@ -4,6 +4,25 @@
 
 Changelog
 
+* 1.0.11
+
+      * introduced <<<libDirectory>>> parameter, to allow changing the directory
+        with the jars; default is <<</usr/lib/{PGKNAME}>>>, but one can change it
+        to <<</opt/{PGKNAME}/lib>>> with this parameter.
+
+      * introduced <<<docDirectory>>> parameter, to allow changing the directory
+        with the documentation; default is <<</usr/share/doc/{PGKNAME}>>>, but one can change it
+        to <<</opt/{PGKNAME}/doc>>> with this parameter.
+
+      * introduced <<<manDirectory>>> parameter, to allow changing the directory
+        with the man pages; default is <<</usr/share/man>>>, but one can change it
+        to <<</opt/{PGKNAME}/man>>> with this parameter.
+
+      * introduced <<<createSymLinks>>> parameter, to allow turning off symbolic
+        link generation for jar files (without the artifact version).
+
+	[]
+
 * 1.0.10
 
       * change directory for jars from <<<usr/share/lib/PKGNAME>>>
