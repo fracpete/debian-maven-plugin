@@ -4,6 +4,13 @@
 
 Changelog
 
+* 1.0.10
+
+      * change directory for jars from <<<usr/share/lib/PKGNAME>>>
+        to <<<usr/lib/PKGNAME>>>
+
+	[]
+
 * 1.0.9
 
       * fixed <<<NullPointerException>>> when not supplying any regular expressions
