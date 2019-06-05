@@ -187,16 +187,19 @@ public class PackageMojo extends AbstractDebianMojo
 		if (excludeArtifactsPattern == null)
 		{
 			excludeArtifactsPattern = new HashSet<>();
-			for (String regexp: excludeArtifactsRegExp)
+			if (excludeArtifactsRegExp != null)
 			{
-				try
+				for (String regexp : excludeArtifactsRegExp)
 				{
-					Pattern p = Pattern.compile(regexp);
-					excludeArtifactsPattern.add(p);
-				}
-				catch (Exception e)
-				{
-					getLog().error("Failed to parse excludeArtifactsPattern '" + regexp + "'!", e);
+					try
+					{
+						Pattern p = Pattern.compile(regexp);
+						excludeArtifactsPattern.add(p);
+					}
+					catch (Exception e)
+					{
+						getLog().error("Failed to parse excludeArtifactsPattern '" + regexp + "'!", e);
+					}
 				}
 			}
 		}
