@@ -21,6 +21,9 @@ Changelog
       * introduced <<<createSymLinks>>> parameter, to allow turning off symbolic
         link generation for jar files (without the artifact version).
 
+      * introduced <<<createIncludeFiles>>> parameter, to allow turning off creation
+        of .inc files for artifacts.
+
 	[]
 
 * 1.0.10

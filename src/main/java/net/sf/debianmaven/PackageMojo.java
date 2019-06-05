@@ -162,6 +162,12 @@ public class PackageMojo extends AbstractDebianMojo
 	protected boolean createSymLinks;
 
 	/**
+	 * @parameter default-value="true"
+	 * @since 1.0.11
+	 */
+	protected boolean createIncludeFiles;
+
+	/**
 	 * The Maven project object
 	 * 
 	 * @parameter expression="${project}"
@@ -428,7 +434,7 @@ public class PackageMojo extends AbstractDebianMojo
 
 		for (Artifact a : artifacts)
 		{
-			if (includeArtifact(a))
+			if (includeArtifact(a) && createIncludeFiles)
 				writeIncludeFile(targetLibDir, a.getArtifactId(), a.getVersion(), deps.get(a));
 		}
 	}

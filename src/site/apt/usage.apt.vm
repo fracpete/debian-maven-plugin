@@ -84,6 +84,8 @@ Usage
 *------------------+-----------------------+------------------------+-----------+------------------------+
   createSymLinks   |                       | Whether to create symbolic links for jars without the artifact version. | boolean | true
 *------------------+-----------------------+------------------------+-----------+------------------------+
+  createIncludeFiles |                       | Whether to create .inc files for the artifacts. | boolean | true
+*------------------+-----------------------+------------------------+-----------+------------------------+
   repository       | deb.repository.location | Location of the Debian repository | File |
 *------------------+-----------------------+------------------------+-----------+------------------------+
   codenames        |                           | The codenames of the distribution branches (e.g., lenny, natty, etc.) | String | experimental
