@@ -28,7 +28,7 @@
                     
                 <div class="xleft">
         <span id="publishDate">Last Published: 2019-06-06</span>
-                  &nbsp;| <span id="projectVersion">Version: 1.0.11-SNAPSHOT</span>
+                  &nbsp;| <span id="projectVersion">Version: 1.0.12-SNAPSHOT</span>
                       </div>
             <div class="xright">        
                     
@@ -91,7 +91,7 @@
       &lt;plugin&gt;
         &lt;groupId&gt;com.github.fracpete&lt;/groupId&gt;
         &lt;artifactId&gt;debian-maven-plugin&lt;/artifactId&gt;
-        &lt;version&gt;1.0.11-SNAPSHOT&lt;/version&gt;
+        &lt;version&gt;1.0.12-SNAPSHOT&lt;/version&gt;
         &lt;configuration&gt;
           &lt;!--
           &lt;packageName&gt;my-package&lt;/packageName&gt;
@@ -232,13 +232,13 @@
 <td align="left"></td>
 <td align="left">The directory to contain the libraries. Placeholder <tt><a name="PKGNAME">PKGNAME</a></tt> gets replaced with value of <tt>packageName</tt>.</td>
 <td align="left">String</td>
-<td align="left">/usr/lib/<a name="PGKNAME">PGKNAME</a></td></tr>
+<td align="left">/usr/lib/{PKGNAME}</td></tr>
 <tr class="b">
 <td align="left">docDirectory</td>
 <td align="left"></td>
 <td align="left">The directory to contain the documentation. Placeholder <tt><a name="PKGNAME">PKGNAME</a></tt> gets replaced with value of <tt>packageName</tt>.</td>
 <td align="left">String</td>
-<td align="left">/usr/share/doc/<a name="PGKNAME">PGKNAME</a></td></tr>
+<td align="left">/usr/share/doc/{PKGNAME}</td></tr>
 <tr class="a">
 <td align="left">manDirectory</td>
 <td align="left"></td>
