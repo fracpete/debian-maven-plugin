@@ -76,9 +76,9 @@ Usage
 *------------------+-----------------------+------------------------+-----------+------------------------+
   includeAttachedArtifacts |                   | Include all attached artifacts. | Boolean | true
 *------------------+-----------------------+------------------------+-----------+------------------------+
-  libDirectory     |                       | The directory to contain the libraries. Placeholder <<<{PKGNAME}>>> gets replaced with value of <<<packageName>>>. | String | /usr/lib/{PGKNAME}
+  libDirectory     |                       | The directory to contain the libraries. Placeholder <<<{PKGNAME}>>> gets replaced with value of <<<packageName>>>. | String | /usr/lib/\{PKGNAME\}
 *------------------+-----------------------+------------------------+-----------+------------------------+
-  docDirectory     |                       | The directory to contain the documentation. Placeholder <<<{PKGNAME}>>> gets replaced with value of <<<packageName>>>. | String | /usr/share/doc/{PGKNAME}
+  docDirectory     |                       | The directory to contain the documentation. Placeholder <<<{PKGNAME}>>> gets replaced with value of <<<packageName>>>. | String | /usr/share/doc/\{PKGNAME\}
 *------------------+-----------------------+------------------------+-----------+------------------------+
   manDirectory     |                       | The directory to contain the man pages. Placeholder <<<{PKGNAME}>>> gets replaced with value of <<<packageName>>>. | String | /usr/share/man
 *------------------+-----------------------+------------------------+-----------+------------------------+
