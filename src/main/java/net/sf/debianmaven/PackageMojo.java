@@ -146,7 +146,7 @@ public class PackageMojo extends AbstractDebianMojo
 
 	private File createTargetLibDir()
 	{
-		File targetLibDir = new File(stageDir, "usr/share/lib/" + packageName);
+		File targetLibDir = new File(stageDir, "usr/lib/" + packageName);
 		targetLibDir.mkdirs();
 		return targetLibDir;
 	}
