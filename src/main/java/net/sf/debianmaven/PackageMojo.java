@@ -315,9 +315,9 @@ public class PackageMojo extends AbstractDebianMojo
 		boolean doExclude = excludeArtifacts != null && (a.getDependencyTrail() == null || Collections.disjoint(a.getDependencyTrail(), excludeArtifacts));
 		if (!doExclude && (getExcludeArtifactsPattern().size() > 0))
 		{
+			String aStr = a.getGroupId() + ":" + a.getArtifactId() + ":" + (a.hasClassifier() ? a.getClassifier() : "");
 			for (Pattern p: getExcludeArtifactsPattern())
 			{
-				String aStr = a.getGroupId() + ":" + a.getArtifactId() + ":" + (a.hasClassifier() ? a.getClassifier() : "");
 				if (p.matcher(aStr).matches())
 				{
 					getLog().debug(aStr + " excluded using pattern: " + p.pattern());
@@ -372,7 +372,10 @@ public class PackageMojo extends AbstractDebianMojo
 		File targetLibDir = createTargetLibDir();
 
 		for (Artifact a : (Collection<Artifact>)project.getAttachedArtifacts())
-			copyArtifact(a, targetLibDir);
+		{
+			if (includeArtifact(a))
+				copyArtifact(a, targetLibDir);
+		}
 	}
 
 	@SuppressWarnings("unchecked")
