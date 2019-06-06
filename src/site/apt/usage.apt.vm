@@ -86,6 +86,10 @@ Usage
 *------------------+-----------------------+------------------------+-----------+------------------------+
   createIncludeFiles |                       | Whether to create .inc files for the artifacts. | boolean | true
 *------------------+-----------------------+------------------------+-----------+------------------------+
+  useDefaultFixPermissions |                       | Whether to use default rules for fixing file permissions (setting 755 on scripts in <<<bin>>> and <<<sbin>>> and <<<pre>>> and <<<post>>> scripts in <<<DEBIAN>>>). | boolean | false
+*------------------+-----------------------+------------------------+-----------+------------------------+
+  fixPermissions   |                       | Custom rules for applying permissions to files, using nested <<<fixPermission>>> with <<<include>>> regular expression (eg <<<.*myscript.*>>>) and <<<permissions>>> POSIX permissions string (eg <<<rwxr-xr-x>>>). | FixPermission[] | false
+*------------------+-----------------------+------------------------+-----------+------------------------+
   repository       | deb.repository.location | Location of the Debian repository | File |
 *------------------+-----------------------+------------------------+-----------+------------------------+
   codenames        |                           | The codenames of the distribution branches (e.g., lenny, natty, etc.) | String | experimental
@@ -196,9 +200,8 @@ included <<above>> the Debian Maven Plugin!
 
 	Unfortunately, the Maven Resources Plugin does not retain Unix file
 permissions, meaning that all executable files lose their execution permission
-after copying. A workaround is to use the Maven Antrun Plugin to re-enable
-execution of all relevant files. An example configuration to do so is the
-following:
+after copying. But you can use the <<<useDefaultFixPermissions>>> and <<<fixPermissions>>>
+parameters to counter this:
 
 +----------------------------
 <build>
@@ -206,32 +209,19 @@ following:
     ...
 
     <plugin>
-      <!--
-        This plugin's configuration must come *after* the Maven Resources
-        Plugin, and *before* the Debian Maven Plugin.
-      -->
-      <groupId>org.apache.maven.plugins</groupId>
-      <artifactId>maven-antrun-plugin</artifactId>
-      <version>1.6</version>
-      <executions>
-        <execution>
-          <id>fix-permissions</id>
-          <phase>package</phase>
-          <configuration>
-            <target>
-              <chmod perm="ugo+x">
-                <fileset dir="${basedir}/target/deb">
-                  <include name="**/bin/**"/>
-                  <include name="**/sbin/**"/>
-                  <include name="DEBIAN/post*"/>
-                  <include name="DEBIAN/pre*"/>
-                </fileset>
-              </chmod>
-            </target>
-          </configuration>
-          <goals><goal>run</goal></goals>
-        </execution>
-      </executions>
+      <groupId>com.github.fracpete</groupId>
+      <artifactId>debian-maven-plugin</artifactId>
+      <configuration>
+        <packageName>my-package</packageName>
+        <packageVersion>1.0.0</packageVersion>
+        <useDefaultFixPermissions>true</useDefaultFixPermissions>
+        <fixPermissions>
+          <fixPermission>
+            <include>.*myscript.*</include>
+            <permissions>rwxr-xr-x</permissions>
+          </fixPermission>
+        </fixPermissions>
+      </configuration>
     </plugin>
 
     ...

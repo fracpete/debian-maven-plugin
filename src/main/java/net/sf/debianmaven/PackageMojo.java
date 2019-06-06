@@ -168,6 +168,20 @@ public class PackageMojo extends AbstractDebianMojo
 	protected boolean createIncludeFiles;
 
 	/**
+	 * @parameter default-value="false"
+	 * @since 1.0.12
+	 */
+	protected boolean useDefaultFixPermissions;
+
+	/**
+	 * @parameter
+	 * @since 1.0.12
+	 */
+	protected List<FixPermission> fixPermissions;
+
+	protected List<FixPermission> activeFixPermissions;
+
+	/**
 	 * The Maven project object
 	 * 
 	 * @parameter expression="${project}"
@@ -244,6 +258,39 @@ public class PackageMojo extends AbstractDebianMojo
 			result = manDirectory;
 		result = result.replace("{PKGNAME}", packageName);
 		return result;
+	}
+
+	private List<FixPermission> getActiveFixPermissions()
+	{
+		if (activeFixPermissions == null)
+		{
+			activeFixPermissions = new ArrayList<>();
+			if (useDefaultFixPermissions)
+			{
+				try
+				{
+					activeFixPermissions.add(new FixPermission(".*\\/bin\\/.*", "rwxr-xr-x"));
+					activeFixPermissions.add(new FixPermission(".*\\/sbin\\/.*", "rwxr-xr-x"));
+					activeFixPermissions.add(new FixPermission(".*\\/DEBIAN\\/post.*", "rwxr-xr-x"));
+					activeFixPermissions.add(new FixPermission(".*\\/DEBIAN\\/pre.*", "rwxr-xr-x"));
+				}
+				catch (Exception e)
+				{
+					getLog().error("Failed to setup default fix permissions!", e);
+				}
+			}
+			if (fixPermissions != null)
+			{
+				for (FixPermission fp : fixPermissions)
+				{
+					if (fp.isValid())
+						activeFixPermissions.add(fp);
+					else
+						getLog().warn("Fix permission is not valid, skipping: " + fp);
+				}
+			}
+		}
+		return activeFixPermissions;
 	}
 
 	private File createTargetLibDir() throws IOException
@@ -467,6 +514,50 @@ public class PackageMojo extends AbstractDebianMojo
 		out.close();
 	}
 
+	private void applyFixPermissions(File dir, List<FixPermission> fixPermissions) throws IOException
+	{
+		getLog().debug("Fixing permissions in: " + dir);
+
+		// directory itself
+		for (FixPermission fixPermission: fixPermissions)
+		{
+			if (fixPermission.appliesTo(dir))
+			{
+				getLog().debug("'" + fixPermission + "' applies to: " + dir);
+				fixPermission.applyTo(dir);
+			}
+		}
+
+		// iterate files/dirs
+		File[] files = dir.listFiles();
+		if (files != null)
+		{
+			for (File file: files)
+			{
+				if (file.isDirectory())
+					applyFixPermissions(file, fixPermissions);
+				else
+				{
+					for (FixPermission fixPermission: fixPermissions)
+					{
+						if (fixPermission.appliesTo(file))
+						{
+							getLog().debug("'" + fixPermission + "' applies to: " + file);
+							fixPermission.applyTo(file);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	private void applyFixPermissions() throws IOException
+	{
+		List<FixPermission> active = getActiveFixPermissions();
+		if (active.size() != 0)
+			applyFixPermissions(stageDir, active);
+	}
+
 	private void generateControl(File target) throws IOException
 	{
 		getLog().info("Generating control file: "+target);
@@ -665,6 +756,7 @@ public class PackageMojo extends AbstractDebianMojo
 			copyAttachedArtifacts();
 			copyArtifacts();
 			generateCopyright();
+			applyFixPermissions();
 			generateConffiles(new File(targetDebDir, "conffiles"));
 			generateControl(new File(targetDebDir, "control"));
 			generateMd5Sums(new File(targetDebDir, "md5sums"));

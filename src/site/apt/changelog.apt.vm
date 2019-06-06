@@ -6,6 +6,11 @@ Changelog
 
 * 1.0.12
 
+      * added support for fixing file permissions directly rather than relying
+        the <<<chmod>>> task of the <<<maven-antrun-plugin>>> plugin. this is
+        achieve by using the <<<useDefaultFixPermissions>>> and <<<fixPermissions>>>
+        parameters.
+
       * attached artifacts are now subjected to checks against includes/excludes as well.
 
       []
