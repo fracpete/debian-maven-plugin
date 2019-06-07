@@ -38,6 +38,8 @@ Usage
 *------------------*-----------------------*------------------------*-----------*------------------------*
 | <<POM setting>>  | <<Command line argument>> | <<Description>>        | <<Data type>> | <<Default value>>
 *------------------+-----------------------+------------------------+-----------+------------------------+
+  skip             |                       | Whether to skip the execution. To be used in multi-module projects, with the top-level module setting it to <<<true>>> and the sub-modules to <<<false>>>. | boolean | false
+*------------------+-----------------------+------------------------+-----------+------------------------+
   packageName      | deb.package.name          | Package name           | String        | \$\{project.artifactId\}
 *------------------+-----------------------+------------------------+-----------+------------------------+
   packageVersion   | deb.package.version       | Package version        | String        | \$\{project.version\}
@@ -90,6 +92,10 @@ Usage
 *------------------+-----------------------+------------------------+-----------+------------------------+
   fixPermissions   |                       | Custom rules for applying permissions to files, using nested <<<fixPermission>>> with <<<include>>> regular expression (eg <<<.*myscript.*>>>) and <<<permissions>>> POSIX permissions string (eg <<<rwxr-xr-x>>>). | FixPermission[] | false
 *------------------+-----------------------+------------------------+-----------+------------------------+
+  useDefaultCopyResources |                       | Whether to use default rules for copy resource files (from <<<src/deb/resources>>> to <<<target/deb>>>). | boolean | false
+*------------------+-----------------------+------------------------+-----------+------------------------+
+  copyResources    |                       | Custom rules for copying resources, using nested <<<copyResource>>> with <<<include>>> regular expression (eg <<<.*myscript.*>>>) and <<<source>>> and <<<target>>> strings (dir or file). | CopyResource[] | false
+*------------------+-----------------------+------------------------+-----------+------------------------+
   repository       | deb.repository.location | Location of the Debian repository | File |
 *------------------+-----------------------+------------------------+-----------+------------------------+
   codenames        |                           | The codenames of the distribution branches (e.g., lenny, natty, etc.) | String | experimental
@@ -99,6 +105,8 @@ Usage
   skipDeployMissing| deb.deploy.skipMissing    | Skip package deployment if the package does not exist | Boolean | true
 *------------------+-----------------------+------------------------+-----------+------------------------+
 
+** Skipping execution
+
 	The plugin execution is skipped automatically if the operating system is not linux.
 The plugin execution can be skipped explicitly by providing the system property <<<skipDeb>>>,
 and it is forced to run regardless the operating system if <<<runDeb>>> is provided.
@@ -107,6 +115,52 @@ Example:
 +--------------------
 mvn -DskipDeb
 +--------------------
+
+** Multi-module projects
+
+	The top-level module in multi-module projects usually only defines
+plugins, properties, etc, but does not actually contain any code that requires
+packaging. In order to avoid execution in the top-level module, you can use
+the <<<skip>>> parameter set to <<<true>>>:
+
++----------------------------
+<build>
+  <plugins>
+    ...
+
+    <plugin>
+      <groupId>com.github.fracpete</groupId>
+      <artifactId>debian-maven-plugin</artifactId>
+      <configuration>
+        <skip>true</skip>
+      </configuration>
+    </plugin>
+    ...
+  </plugins>
+</build>
++----------------------------
+
+	And in the sub-modules, you set this flag to <<<false>>>:
+
++----------------------------
+<build>
+  <plugins>
+    ...
+
+    <plugin>
+      <groupId>com.github.fracpete</groupId>
+      <artifactId>debian-maven-plugin</artifactId>
+      ...
+      <configuration>
+        <skip>false</skip>
+        ...
+      </configuration>
+    </plugin>
+    ...
+  </plugins>
+</build>
++----------------------------
+
 
 * Adding package content
 
@@ -147,13 +201,25 @@ Here are some pointers for help writing man pages:
 
 ** Adding other files
 
-	The plugin does not take care of files other than JARs.
-However, it can be used in conjunction with other plugins to take care of that.
-The stage directory for the Debian package is <<<target/deb>>>, so any files
-copied into that directory during the build process are included in the Debian package.
+	By default, the plugin only takes care of JARs.
+However, if you require additional resources to be part of your debian package
+(eg scripts in <<</usr/bin>>>), then you can use the <<<useDefaultCopyResources>>>
+and <<<copyResources>>> parameters to achieve this.
 
-	I recommend the Maven Resources Plugin to copy resources into the stage
-directory. The following is an example configuration.
+	With <<<useDefaultCopyResources>>> set to <<<true>>>, the plugin copies
+everything below <<<src/deb/resources>>> into the staging directory <<<target/deb>>>.
+
+	<<<copyResources>>> allows you to copy other files as well. Each of the
+nested <<<copyResource>>> tags is comprised of <<<source>>>, <<<target>>>
+and an optional <<<include>>> tags. Both, <<<source>>> and <<<target>>> can be
+directories or files. The <<<include>>> tag uses regular expressions for matching
+files to include in the copy process. If omitted, the match all pattern <<<.*>>>
+is assumed.
+
+	The following example applies the default copy rules and also copies PDF
+files from the target directory into <<<target/deb/usr/share/doc/my-package>>>
+to make them available in <<</usr/share/doc/my-package>>> after installing
+the package.
 
 +----------------------------
 <build>
@@ -161,47 +227,42 @@ directory. The following is an example configuration.
     ...
 
     <plugin>
-      <!--
-        This plugin's configuration must come *before* the Debian Maven
-        Plugin.
-      -->
-      <artifactId>maven-resources-plugin</artifactId>
-      <version>2.3</version>
-      <executions>
-        <execution>
-          <id>copy-deb-resources</id>
-          <phase>process-resources</phase>
-          <goals><goal>copy-resources</goal></goals>
-          <configuration>
-            <overwrite>true</overwrite>
-            <outputDirectory>${basedir}/target/deb</outputDirectory>
-            <resources>
-              <resource>
-                <directory>src/deb/resources</directory>
-		<!-- Uncomment the following line to enable Velocity filtering. -->
-		<!--
-                <filtering>true</filtering>
-		-->
-              </resource>
-            </resources>
-          </configuration>
-        </execution>
-      </executions>
+      <groupId>com.github.fracpete</groupId>
+      <artifactId>debian-maven-plugin</artifactId>
+      <configuration>
+        <packageName>my-package</packageName>
+        <packageVersion>1.0.0</packageVersion>
+        <useDefaultCopyResources>true</useDefaultCopyResources>
+        <copyResources>
+          <copyResource>
+            <source>target</source>
+            <target>target/deb/usr/share/doc/my-package</target>
+            <include>.*\.pdf</include>
+          </copyResource>
+        </copyResources>
+      </configuration>
     </plugin>
-
     ...
   </plugins>
 </build>
 +----------------------------
 
-	<<IMPORTANT:>> plugins in the same phase run in the order in which they
-are mentioned in the POM. This means that the Maven Resources Plugin must be
-included <<above>> the Debian Maven Plugin!
-
-	Unfortunately, the Maven Resources Plugin does not retain Unix file
+	Unfortunately, the copying does not retain Unix file
 permissions, meaning that all executable files lose their execution permission
 after copying. But you can use the <<<useDefaultFixPermissions>>> and <<<fixPermissions>>>
-parameters to counter this:
+parameters to counter this.
+
+	When <<<useDefaultFixPermissions>>> is set to <<<true>>>, then the plugin
+ensures that all scripts in the <<<bin>>> and <<<sbin>>> directories and the
+<<<DEBIAN/pre>>> and <<<DEBIAN/post>>> scripts are executable (using <<<rwxr-xr-x>>>).
+
+	<<<fixPermissions>>> allows you to change the permissions of other
+files and directories. Each of the nested <<<fixPermission>>> tags consists
+of the <<<include>>> regular expression to match against the full filename
+and <<<permissions>>> containing the <ugo> (user, group, other) permissions.
+
+	Here is an example that applies the default permission fixes and also ensures
+that the <<<myscript>>> script is executable as well:
 
 +----------------------------
 <build>
@@ -223,20 +284,19 @@ parameters to counter this:
         </fixPermissions>
       </configuration>
     </plugin>
-
     ...
   </plugins>
 </build>
 +----------------------------
 
-** Deploying
+* Deploying
 
 	The plugin can use reprepro to deploy the Debian package to a local
 reprepro repository. The plugin assumes an existing reprepro repository and
 configuration, and requires pointers to their locations. The plugin uses the
 following parameters:
 
-	* repository (path to the repository; ex: /path/to/repo)
+	* repository (path to the repository; eg: /path/to/repo)
 
 	* repreproConfigurationDir (the reprepro configuration directory)
 

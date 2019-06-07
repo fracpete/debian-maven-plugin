@@ -182,6 +182,20 @@ public class PackageMojo extends AbstractDebianMojo
 	protected List<FixPermission> activeFixPermissions;
 
 	/**
+	 * @parameter default-value="false"
+	 * @since 1.0.12
+	 */
+	protected boolean useDefaultCopyResources;
+
+	/**
+	 * @parameter
+	 * @since 1.0.12
+	 */
+	protected List<CopyResource> copyResources;
+
+	protected List<CopyResource> activeCopyResources;
+
+	/**
 	 * The Maven project object
 	 * 
 	 * @parameter expression="${project}"
@@ -291,6 +305,23 @@ public class PackageMojo extends AbstractDebianMojo
 			}
 		}
 		return activeFixPermissions;
+	}
+
+	private List<CopyResource> getActiveCopyResources()
+	{
+		if (activeCopyResources == null)
+		{
+			activeCopyResources = new ArrayList<>();
+			if (useDefaultCopyResources)
+			{
+				activeCopyResources.add(new CopyResource("src/deb/resources", "target/deb", ".*"));
+			}
+			if (copyResources != null)
+			{
+				activeCopyResources.addAll(copyResources);
+			}
+		}
+		return activeCopyResources;
 	}
 
 	private File createTargetLibDir() throws IOException
@@ -514,40 +545,18 @@ public class PackageMojo extends AbstractDebianMojo
 		out.close();
 	}
 
-	private void applyFixPermissions(File dir, List<FixPermission> fixPermissions) throws IOException
+	private void copyResources() throws IOException
 	{
-		getLog().debug("Fixing permissions in: " + dir);
-
-		// directory itself
-		for (FixPermission fixPermission: fixPermissions)
+		for (CopyResource copyResource: getActiveCopyResources())
 		{
-			if (fixPermission.appliesTo(dir))
-			{
-				getLog().debug("'" + fixPermission + "' applies to: " + dir);
-				fixPermission.applyTo(dir);
-			}
-		}
-
-		// iterate files/dirs
-		File[] files = dir.listFiles();
-		if (files != null)
-		{
-			for (File file: files)
-			{
-				if (file.isDirectory())
-					applyFixPermissions(file, fixPermissions);
-				else
-				{
-					for (FixPermission fixPermission: fixPermissions)
-					{
-						if (fixPermission.appliesTo(file))
-						{
-							getLog().debug("'" + fixPermission + "' applies to: " + file);
-							fixPermission.applyTo(file);
-						}
-					}
-				}
-			}
+			getLog().info("Copy resources using: " + copyResource);
+			IOUtils.copyOrMove(
+				getLog(),
+				new File(copyResource.getSource()),
+				new File(copyResource.getTarget()),
+				false,
+				false,
+				copyResource.getIncludePattern());
 		}
 	}
 
@@ -555,7 +564,7 @@ public class PackageMojo extends AbstractDebianMojo
 	{
 		List<FixPermission> active = getActiveFixPermissions();
 		if (active.size() != 0)
-			applyFixPermissions(stageDir, active);
+			IOUtils.applyFixPermissions(getLog(), stageDir, active);
 	}
 
 	private void generateControl(File target) throws IOException
@@ -756,6 +765,7 @@ public class PackageMojo extends AbstractDebianMojo
 			copyAttachedArtifacts();
 			copyArtifacts();
 			generateCopyright();
+			copyResources();
 			applyFixPermissions();
 			generateConffiles(new File(targetDebDir, "conffiles"));
 			generateControl(new File(targetDebDir, "control"));

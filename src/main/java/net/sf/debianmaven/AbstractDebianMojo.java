@@ -86,6 +86,9 @@ public abstract class AbstractDebianMojo extends AbstractMojo
 	 */
 	private File snapshotRevisionFile = null;
 
+	/** @parameter default-value="false" */
+	private boolean skip;
+
 	private static final DateFormat datefmt = new SimpleDateFormat("yyyyMMddHHmm");
 
 	private String snapshotRevision = null;
@@ -168,11 +171,21 @@ public abstract class AbstractDebianMojo extends AbstractMojo
 			getLog().info("debian-maven execution forced (-DrunDeb)");
 			executeDebMojo();
 		}
+		else if (skip)
+		{
+			getLog().info("debian-maven execution skipped ('skip')");
+		}
 		else if (System.getProperties().containsKey(SKIP_DEB_PROPERTY))
+		{
 			getLog().info("debian-maven execution skipped (-DskipDeb)");
+		}
 		else if (!System.getProperty("os.name").equals("Linux"))
+		{
 			getLog().warn("debian-maven execution skipped (non-linux OS)");
+		}
 		else
+		{
 			executeDebMojo();
+		}
 	}
 }

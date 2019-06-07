@@ -6,12 +6,20 @@ Changelog
 
 * 1.0.12
 
+      * attached artifacts are now subjected to checks against includes/excludes as well.
+
+      * added support for copying resources (directories or files) directly, without
+        having to rely on the <<<copy-resources>>> goal of <<<maven-resources-plugin>>>.
+        this is achieve with the <<<useDefaultCopyResources>>> and <<<copyResources>>>
+        parameters.
+
       * added support for fixing file permissions directly rather than relying
         the <<<chmod>>> task of the <<<maven-antrun-plugin>>> plugin. this is
         achieve by using the <<<useDefaultFixPermissions>>> and <<<fixPermissions>>>
         parameters.
 
-      * attached artifacts are now subjected to checks against includes/excludes as well.
+      * added <<<skip>>> parameter, which can be used in top-level pom modules
+        of multi-module projects to skip the execution of the plugin.
 
       []
 
@@ -39,7 +47,7 @@ Changelog
 
 * 1.0.10
 
-      * change directory for jars from <<<usr/share/lib/PKGNAME>>>
+      * changed directory for jars from <<<usr/share/lib/PKGNAME>>>
         to <<<usr/lib/PKGNAME>>>
 
 	[]
