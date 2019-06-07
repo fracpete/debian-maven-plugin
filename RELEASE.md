@@ -3,7 +3,7 @@
 * Run the following command to deploy the artifacts:
 
   ```
-  mvn release:clean release:prepare release:perform site
+  mvn release:clean release:prepare release:perform
   ```
 
 * Push all changes
