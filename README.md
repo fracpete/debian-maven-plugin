@@ -14,3 +14,10 @@ http://debian-maven.sf.net/
 Documentation on usage, goals, etc is located here:
 
 https://fracpete.github.io/debian-maven-plugin/
+
+## Examples
+
+Example Maven projects that use this plugin are located here:
+
+https://github.com/fracpete/debian-maven-plugin-examples
+
