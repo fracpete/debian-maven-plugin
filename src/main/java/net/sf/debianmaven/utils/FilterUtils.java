@@ -55,7 +55,9 @@ public class FilterUtils
 		List<String> result;
 		int indexStart;
 		int indexEnd;
+		String original;
 
+		original = line;
 		result = new ArrayList<>();
 		while (line.length() > 0)
 		{
@@ -79,7 +81,7 @@ public class FilterUtils
 		}
 
 		if (result.size() > 0)
-			log.debug("Variables extracted from line '" + line + "': " + result);
+			log.debug("Variables extracted from line '" + original + "': " + result);
 
 		return result;
 	}
