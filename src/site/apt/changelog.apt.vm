@@ -4,6 +4,14 @@
 
 Changelog
 
+* 1.0.14
+
+      * when <<<useDefaultCopyResources>>> is enabled but <<<src/deb/resources>>>
+        does not exist, then a warning is output rather than failing with an
+        exception when attempting to copy.
+
+      []
+
 * 1.0.13
 
       * added support for file filtering (ie replacing of variables in text files),
