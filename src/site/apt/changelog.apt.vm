@@ -4,6 +4,13 @@
 
 Changelog
 
+* 1.0.13
+
+      * added support for file filtering (ie replacing of variables in text files),
+        disabled by default.
+
+      []
+
 * 1.0.12
 
       * attached artifacts are now subjected to checks against includes/excludes as well.

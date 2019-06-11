@@ -1,6 +1,10 @@
 package net.sf.debianmaven;
 
 import com.github.fracpete.processoutput4j.output.CollectingProcessOutput;
+import net.sf.debianmaven.utils.FilteredFileCopy;
+import net.sf.debianmaven.utils.IOUtils;
+import net.sf.debianmaven.utils.DefaultFileCopy;
+import net.sf.debianmaven.utils.FileCopy;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections15.MultiMap;
 import org.apache.commons.collections15.multimap.MultiHashMap;
@@ -194,6 +198,12 @@ public class PackageMojo extends AbstractDebianMojo
 	protected List<CopyResource> copyResources;
 
 	protected List<CopyResource> activeCopyResources;
+
+	/**
+	 * @parameter
+	 * @since 1.0.13
+	 */
+	protected FileFiltering fileFiltering;
 
 	/**
 	 * The Maven project object
@@ -547,16 +557,41 @@ public class PackageMojo extends AbstractDebianMojo
 
 	private void copyResources() throws IOException
 	{
+		if (fileFiltering == null)
+		{
+			getLog().debug("File filter is null, instantiating default");
+			fileFiltering = new FileFiltering();
+		}
+		getLog().info("File filtering: " + fileFiltering);
+
+		FileCopy fileCopy;
+		if (!fileFiltering.getEnabled())
+		{
+			fileCopy = new DefaultFileCopy();
+		}
+		else
+		{
+			Map<String,String> additional = new HashMap<>();
+			additional.put("packageName", packageName);
+			additional.put("packageTitle", packageTitle);
+			additional.put("packagePriority", packagePriority);
+			additional.put("packageSection", packageSection);
+			additional.put("packageDescription", packageDescription);
+			additional.put("packageArchitecture", packageArchitecture);
+			additional.put("packageRevision", packageRevision);
+			fileCopy = new FilteredFileCopy(project.getModel(), fileFiltering.getIncludePattern(), fileFiltering.getExcludePattern(), additional);
+		}
+		fileCopy.setLog(getLog());
+
 		for (CopyResource copyResource: getActiveCopyResources())
 		{
 			getLog().info("Copy resources using: " + copyResource);
-			IOUtils.copyOrMove(
+			IOUtils.copy(
 				getLog(),
 				new File(copyResource.getSource()),
 				new File(copyResource.getTarget()),
-				false,
-				false,
-				copyResource.getIncludePattern());
+				copyResource.getIncludePattern(),
+				fileCopy);
 		}
 	}
 

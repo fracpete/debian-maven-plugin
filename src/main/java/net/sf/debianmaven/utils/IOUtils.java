@@ -18,16 +18,15 @@
  * Copyright (C) 2019 University of Waikato, Hamilton, NZ
  */
 
-package net.sf.debianmaven;
+package net.sf.debianmaven.utils;
 
+import net.sf.debianmaven.FixPermission;
 import org.apache.maven.plugin.logging.Log;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -90,16 +89,14 @@ public class IOUtils
 	 * Original code from <a href="http://www.java-tips.org/java-se-tips/java.io/how-to-copy-a-directory-from-one-location-to-another-loc.html" target="_blank">Java-Tips.org</a>.
 	 *
 	 * @param log for logging
-	 * @param sourceLocation	the source file/dir
-	 * @param targetLocation	the target file/dir
-	 * @param move		if true then the source files/dirs get deleted
-	 * 				as soon as copying finished
-	 * @param atomic		whether to perform an atomic move operation
-	 * @param include   the regular expression pattern for including files/dirs
-	 * @return			false if failed to delete when moving or failed to create target directory
+	 * @param sourceLocation the source file/dir
+	 * @param targetLocation the target file/dir
+	 * @param include the regular expression pattern for including files/dirs
+	 * @param fileCopy performs the actual copying of source/target file
+	 * @return false if failed to delete when moving or failed to create target directory
 	 * @throws IOException	if copying/moving fails
 	 */
-	public static boolean copyOrMove(Log log, File sourceLocation, File targetLocation, boolean move, boolean atomic, Pattern include) throws IOException
+	public static boolean copy(Log log, File sourceLocation, File targetLocation, Pattern include, FileCopy fileCopy) throws IOException
 	{
 		String[] children;
 		int i;
@@ -120,19 +117,16 @@ public class IOUtils
 			for (i = 0; i < children.length; i++) {
 				if (include.matcher(new File(sourceLocation.getAbsoluteFile(), children[i]).getAbsolutePath()).matches())
 				{
-					if (!copyOrMove(
+					if (!copy(
 						log,
 						new File(sourceLocation.getAbsoluteFile(), children[i]),
 						new File(targetLocation.getAbsoluteFile(), children[i]),
-						move, atomic, include))
+						include, fileCopy))
 						return false;
 				}
 			}
 
-			if (move)
-				return sourceLocation.delete();
-			else
-				return true;
+			return true;
 		}
 		else {
 			source = FileSystems.getDefault().getPath(sourceLocation.getAbsolutePath());
@@ -142,19 +136,8 @@ public class IOUtils
 					target = FileSystems.getDefault().getPath(targetLocation.getAbsolutePath() + File.separator + sourceLocation.getName());
 				else
 					target = FileSystems.getDefault().getPath(targetLocation.getAbsolutePath());
-				if (move)
-				{
-					log.debug("Moving '" + sourceLocation + "' to '" + target + "'");
-					if (atomic)
-						Files.move(source, target, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
-					else
-						Files.move(source, target, StandardCopyOption.REPLACE_EXISTING);
-				}
-				else
-				{
-					log.debug("Copying '" + sourceLocation + "' to '" + target + "'");
-					Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
-				}
+				log.debug("Copying '" + sourceLocation + "' to '" + target + "'");
+				fileCopy.copy(source, target);
 			}
 			return true;
 		}

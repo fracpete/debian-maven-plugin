@@ -96,6 +96,8 @@ Usage
 *------------------+-----------------------+------------------------+-----------+------------------------+
   copyResources    |                       | Custom rules for copying resources, using nested <<<copyResource>>> with <<<include>>> regular expression (eg <<<.*myscript.*>>>) and <<<source>>> and <<<target>>> strings (dir or file). | CopyResource[] | false
 *------------------+-----------------------+------------------------+-----------+------------------------+
+  fileFiltering    |                       | If enabled, allows replacing of variables ("$\{...\}") in files that match the <<<include>>> (default: .*) but not the <<<exclude>>> (default: .*\\.(jpg\|jpeg\|png\|svg\|zip\|jar\|pdf)) pattern. | FileFiltering | disabled
+*------------------+-----------------------+------------------------+-----------+------------------------+
   repository       | deb.repository.location | Location of the Debian repository | File |
 *------------------+-----------------------+------------------------+-----------+------------------------+
   codenames        |                           | The codenames of the distribution branches (e.g., lenny, natty, etc.) | String | experimental
@@ -287,6 +289,93 @@ that the <<<myscript>>> script is executable as well:
     ...
   </plugins>
 </build>
++----------------------------
+
+** Filtering files
+
+	By default, resource files are just copied across as is.
+However, in order to make start-up scripts more general, you can place
+variables (<<<$\{varname\}>>>) in them and turn file filtering on in your
+configuration.
+
+	In terms of what variables are supported, there are two types:
+The <first> type being POM related ones, that start with <<<project.>>> like
+<<<project.name>>> or <<<project.version>>>. Sub-properties from properties
+in the POM that allow multiple values, like <<<licenses>>> can access these
+via <<<\[index\]>>>, with the index being 0-based. The <second> type are
+ones specific to this plugin. Here is a list of supported variables:
+
++----------------------------
+packageName
+packageTitle
+packagePriority
+packageSection
+packageDescription
+packageArchitecture
+packageRevision
++----------------------------
+
+	Considering the following configuration for file filtering:
+
++----------------------------
+...
+
+<licenses>
+  <license>
+    <name>GNU General Public License 3</name>
+    <url>http://www.gnu.org/licenses/gpl-3.0.txt</url>
+  </license>
+  <license>
+    <name>Apache 2.0</name>
+    <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+  </license>
+</licenses>
+
+...
+
+<build>
+  <plugins>
+    ...
+
+    <plugin>
+      <groupId>com.github.fracpete</groupId>
+      <artifactId>debian-maven-plugin</artifactId>
+      <configuration>
+        <packageName>my-package</packageName>
+        <packageVersion>1.0.0</packageVersion>
+        <fileFiltering>
+          <enabled>true</enabled>
+          <include>.*</include>
+          <excluded>.*\.(jpg|jpeg|png|svg|zip|jar|pdf)</excluded>
+        </fileFiltering>
+      </configuration>
+    </plugin>
+    ...
+  </plugins>
+</build>
++----------------------------
+
+	When applied to the following snippet of a bash script (the blank between
+<<<$>>> and <<<\{>>> was required for display purposes):
+
++----------------------------
+...
+# Licenses
+# - $ {project.licenses[0].name}
+# - $ {project.licenses[1].name}
+
+CLASSPATH_DIR=/usr/lib/${packageName}
+...
++----------------------------
+
+	Will yield this output:
+
++----------------------------
+# Licenses
+# - GNU General Public License 3
+# - Apache 2.0
+
+CLASSPATH_DIR=/usr/lib/my-package
 +----------------------------
 
 * Deploying
