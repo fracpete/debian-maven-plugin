@@ -164,6 +164,7 @@ public class FilterUtils
 
 				if (value != null)
 				{
+					log.debug("Replacing variable '" + var + "' with value '" + value + "' in: " + line);
 					line = line.replace("${" + var + "}", value);
 					updated = true;
 				}
