@@ -4,6 +4,12 @@
 
 Changelog
 
+* 1.0.15
+
+      * improved/fixed logging output related to file filtering.
+
+      []
+
 * 1.0.14
 
       * when <<<useDefaultCopyResources>>> is enabled but <<<src/deb/resources>>>
