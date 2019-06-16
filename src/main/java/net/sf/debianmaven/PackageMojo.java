@@ -324,13 +324,19 @@ public class PackageMojo extends AbstractDebianMojo
 			activeCopyResources = new ArrayList<>();
 			if (useDefaultCopyResources)
 			{
-				if ((sourceDir != null) && sourceDir.exists())
+				if ((sourceDir != null) && sourceDir.exists() && new File(sourceDir, "resources").exists())
 				{
-					activeCopyResources.add(new CopyResource("src/deb/resources", "target/deb", ".*"));
+					File resourcesDir = new File(sourceDir, "resources");
+					activeCopyResources.add(
+						new CopyResource(
+							resourcesDir.getAbsolutePath(),
+							stageDir.getAbsolutePath(),
+							".*"));
+					getLog().info("using default copy resources: " + resourcesDir + " -> " + stageDir);
 				}
 				else
 				{
-					getLog().warn("'useDefaultCopyResources' is enabled, but 'src/deb/resources' does not exist. Skipping!");
+					getLog().warn("'useDefaultCopyResources' is enabled, but '" + sourceDir + "/resources" + "' does not exist. Skipping!");
 				}
 			}
 			if (copyResources != null)
