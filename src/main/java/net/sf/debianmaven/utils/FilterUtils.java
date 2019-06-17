@@ -179,11 +179,13 @@ public class FilterUtils
 		if (modified)
 		{
 			log.debug("Writing filtered file " + input + " to " + output);
+			Files.createDirectories(output.getParent());
 			Files.write(output, lines, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
 		}
 		else
 		{
 			log.debug("Copying unmodified file " + input + " to " + output);
+			Files.createDirectories(output.getParent());
 			Files.copy(input, output, StandardCopyOption.REPLACE_EXISTING);
 		}
 	}

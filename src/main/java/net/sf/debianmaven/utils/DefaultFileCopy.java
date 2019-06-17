@@ -41,6 +41,7 @@ public class DefaultFileCopy extends AbstractFileCopy
 	public void copy(Path input, Path output) throws IOException
 	{
 		getLog().debug("Copying: " + input);
+		Files.createDirectories(output.getParent());
 		Files.copy(input, output, StandardCopyOption.REPLACE_EXISTING);
 	}
 }

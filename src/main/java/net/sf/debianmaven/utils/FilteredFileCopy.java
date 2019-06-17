@@ -78,6 +78,7 @@ public class FilteredFileCopy extends AbstractFileCopy
 		else
 		{
 			getLog().debug("Copying: " + input);
+			Files.createDirectories(output.getParent());
 			Files.copy(input, output, StandardCopyOption.REPLACE_EXISTING);
 		}
 	}
