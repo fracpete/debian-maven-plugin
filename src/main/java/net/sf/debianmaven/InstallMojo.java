@@ -1,8 +1,8 @@
 package net.sf.debianmaven;
 
-import java.io.IOException;
-
 import org.apache.maven.plugin.MojoExecutionException;
+
+import java.io.IOException;
 
 /**
  * Installs the generated Debian package in the current system.
@@ -29,7 +29,8 @@ public class InstallMojo extends AbstractDebianMojo
 		}
 		catch (IOException e)
 		{
-			throw new MojoExecutionException(e.toString());
+			getLog().error(e.toString());
+			throw new MojoExecutionException(e.getMessage(), e);
 		}
 	}
 }

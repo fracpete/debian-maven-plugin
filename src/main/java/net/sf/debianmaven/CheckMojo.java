@@ -1,8 +1,8 @@
 package net.sf.debianmaven;
 
-import java.io.IOException;
-
 import org.apache.maven.plugin.MojoExecutionException;
+
+import java.io.IOException;
 
 /**
  * Checks whether the generated package complies to style rules.
@@ -28,7 +28,7 @@ public class CheckMojo extends AbstractDebianMojo
 		catch (IOException e)
 		{
 			getLog().error(e.toString());
-			throw new MojoExecutionException(e.toString());
+			throw new MojoExecutionException(e.getMessage(), e);
 		}
 	}
 }

@@ -823,7 +823,7 @@ public class PackageMojo extends AbstractDebianMojo
 		catch (IOException e)
 		{
 			getLog().error(e.toString());
-			throw new MojoExecutionException(e.toString());
+			throw new MojoExecutionException(e.getMessage(), e);
 		}
 	}
 }

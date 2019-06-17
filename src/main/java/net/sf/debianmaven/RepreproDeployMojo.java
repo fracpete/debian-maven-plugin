@@ -68,7 +68,7 @@ public class RepreproDeployMojo extends AbstractRepreproMojo
 		catch (IOException e)
 		{
 			getLog().error(e.toString());
-			throw new MojoExecutionException(e.toString());
+			throw new MojoExecutionException(e.getMessage(), e);
 		}
 	}
 }
