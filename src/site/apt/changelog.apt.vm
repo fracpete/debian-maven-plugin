@@ -4,6 +4,14 @@
 
 Changelog
 
+* 1.0.17
+
+      * copying of resources no longer fails if parent directory of output exists,
+        e.g., when copying a script into <<<target/deb/usr/bin>>> when
+        <<<target/deb/usr/bin>>> does not exist yet.
+
+      []
+
 * 1.0.16
 
       * <<<useDefaultCopyResources>>> now works with multi-module projects as well
