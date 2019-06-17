@@ -187,15 +187,17 @@
 <a class="jxr_linenumber" name="L179" href="#L179">179</a> 		<strong class="jxr_keyword">if</strong> (modified)
 <a class="jxr_linenumber" name="L180" href="#L180">180</a> 		{
 <a class="jxr_linenumber" name="L181" href="#L181">181</a> 			log.debug(<span class="jxr_string">"Writing filtered file "</span> + input + <span class="jxr_string">" to "</span> + output);
-<a class="jxr_linenumber" name="L182" href="#L182">182</a> 			Files.write(output, lines, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
-<a class="jxr_linenumber" name="L183" href="#L183">183</a> 		}
-<a class="jxr_linenumber" name="L184" href="#L184">184</a> 		<strong class="jxr_keyword">else</strong>
-<a class="jxr_linenumber" name="L185" href="#L185">185</a> 		{
-<a class="jxr_linenumber" name="L186" href="#L186">186</a> 			log.debug(<span class="jxr_string">"Copying unmodified file "</span> + input + <span class="jxr_string">" to "</span> + output);
-<a class="jxr_linenumber" name="L187" href="#L187">187</a> 			Files.copy(input, output, StandardCopyOption.REPLACE_EXISTING);
-<a class="jxr_linenumber" name="L188" href="#L188">188</a> 		}
-<a class="jxr_linenumber" name="L189" href="#L189">189</a> 	}
-<a class="jxr_linenumber" name="L190" href="#L190">190</a> }
+<a class="jxr_linenumber" name="L182" href="#L182">182</a> 			Files.createDirectories(output.getParent());
+<a class="jxr_linenumber" name="L183" href="#L183">183</a> 			Files.write(output, lines, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
+<a class="jxr_linenumber" name="L184" href="#L184">184</a> 		}
+<a class="jxr_linenumber" name="L185" href="#L185">185</a> 		<strong class="jxr_keyword">else</strong>
+<a class="jxr_linenumber" name="L186" href="#L186">186</a> 		{
+<a class="jxr_linenumber" name="L187" href="#L187">187</a> 			log.debug(<span class="jxr_string">"Copying unmodified file "</span> + input + <span class="jxr_string">" to "</span> + output);
+<a class="jxr_linenumber" name="L188" href="#L188">188</a> 			Files.createDirectories(output.getParent());
+<a class="jxr_linenumber" name="L189" href="#L189">189</a> 			Files.copy(input, output, StandardCopyOption.REPLACE_EXISTING);
+<a class="jxr_linenumber" name="L190" href="#L190">190</a> 		}
+<a class="jxr_linenumber" name="L191" href="#L191">191</a> 	}
+<a class="jxr_linenumber" name="L192" href="#L192">192</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2012&#x2013;2019. All rights reserved.</div>

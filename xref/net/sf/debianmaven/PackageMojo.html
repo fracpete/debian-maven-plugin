@@ -831,7 +831,7 @@
 <a class="jxr_linenumber" name="L823" href="#L823">823</a> 		<strong class="jxr_keyword">catch</strong> (IOException e)
 <a class="jxr_linenumber" name="L824" href="#L824">824</a> 		{
 <a class="jxr_linenumber" name="L825" href="#L825">825</a> 			getLog().error(e.toString());
-<a class="jxr_linenumber" name="L826" href="#L826">826</a> 			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException(e.toString());
+<a class="jxr_linenumber" name="L826" href="#L826">826</a> 			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException(e.getMessage(), e);
 <a class="jxr_linenumber" name="L827" href="#L827">827</a> 		}
 <a class="jxr_linenumber" name="L828" href="#L828">828</a> 	}
 <a class="jxr_linenumber" name="L829" href="#L829">829</a> }
