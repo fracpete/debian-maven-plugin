@@ -4,6 +4,12 @@
 
 Changelog
 
+* 1.0.18
+
+      * using <<<simple-maven-file-filtering>>> library now for file filtering.
+
+      []
+
 * 1.0.17
 
       * copying of resources no longer fails if parent directory of output exists,
