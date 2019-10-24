@@ -20,6 +20,7 @@
 
 package net.sf.debianmaven.utils;
 
+import com.github.fracpete.simplemavenfilefiltering.FilterUtils;
 import org.apache.maven.model.Model;
 
 import java.io.IOException;
