@@ -4,6 +4,13 @@
 
 Changelog
 
+* 1.0.19
+
+      * added <<<includeScope>>> and <<<excludeScope>>> properties to fine-tune
+        the scope of artifacts to include.
+
+      []
+
 * 1.0.18
 
       * using <<<simple-maven-file-filtering>>> library now for file filtering.

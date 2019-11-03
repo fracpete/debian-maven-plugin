@@ -40,43 +40,47 @@ Usage
 *------------------+-----------------------+------------------------+-----------+------------------------+
   skip             |                       | Whether to skip the execution. To be used in multi-module projects, with the top-level module setting it to <<<true>>> and the sub-modules to <<<false>>>. | boolean | false
 *------------------+-----------------------+------------------------+-----------+------------------------+
-  packageName      | deb.package.name          | Package name           | String        | \$\{project.artifactId\}
+  packageName      | deb.package.name      | Package name           | String    | \$\{project.artifactId\}
 *------------------+-----------------------+------------------------+-----------+------------------------+
-  packageVersion   | deb.package.version       | Package version        | String        | \$\{project.version\}
+  packageVersion   | deb.package.version   | Package version        | String    | \$\{project.version\}
 *------------------+-----------------------+------------------------+-----------+------------------------+
-  packageRevision  | deb.package.revision      | Package revision       | String        | 1
+  packageRevision  | deb.package.revision  | Package revision       | String    | 1
 *------------------+-----------------------+------------------------+-----------+------------------------+
-  packagePriority  | deb.package.priority      | Installation priority  | String        | optional
+  packagePriority  | deb.package.priority  | Installation priority  | String    | optional
 *------------------+-----------------------+------------------------+-----------+------------------------+
-  packageSection   | deb.package.section       | Repository section     | String        | contrib/utils
+  packageSection   | deb.package.section   | Repository section     | String    | contrib/utils
 *------------------+-----------------------+------------------------+-----------+------------------------+
-  packageTitle     | deb.package.title         | Short package description | String     | \$\{project.name\}
+  packageTitle     | deb.package.title     | Short package description | String | \$\{project.name\}
 *------------------+-----------------------+------------------------+-----------+------------------------+
   packageDescription | deb.package.description | Extended package description | String  | \$\{project.description\}
 *------------------+-----------------------+------------------------+-----------+------------------------+
   snapshotRevisionFile| deb.package.snapshotRevFile | When building snapshot packages, append the modification time of this file to the version number. | File | The default is to use the system time.
 *------------------+-----------------------+------------------------+-----------+------------------------+
-  packageDependencies |                        | Dependencies to other packages | String\[\] |
+  packageDependencies |                    | Dependencies to other packages | String\[\] |
 *------------------+-----------------------+------------------------+-----------+------------------------+
-  projectUrl       | deb.project.url           | Project website        | String        | \$\{project.organization.url\}
+  projectUrl       | deb.project.url       | Project website        | String    | \$\{project.organization.url\}
 *------------------+-----------------------+------------------------+-----------+------------------------+
   projectOrganization | deb.project.organization | Organization for Debian control file | String | \$\{project.organization.name\}
 *------------------+-----------------------+------------------------+-----------+------------------------+
-  maintainerName   | deb.maintainer.name       | Package maintainer's name | String     | \$\{project.developers\[0\].name\}
+  maintainerName   | deb.maintainer.name   | Package maintainer's name | String | \$\{project.developers\[0\].name\}
 *------------------+-----------------------+------------------------+-----------+------------------------+
-  maintainerEmail  | deb.maintainer.email      | Package maintainer's email address | String | \$\{project.developers\[0\].email\}
+  maintainerEmail  | deb.maintainer.email  | Package maintainer's email address | String | \$\{project.developers\[0\].email\}
 *------------------+-----------------------+------------------------+-----------+------------------------+
-  includeArtifacts |                           | Artifacts to be included, identified by their filenames. | String[] | The project artifact and its dependencies.
+  includeArtifacts |                       | Artifacts to be included, identified by their filenames. | String[] | The project artifact and its dependencies.
 *------------------+-----------------------+------------------------+-----------+------------------------+
-  excludeArtifacts |                           | Artifacts to be excluded (takes precedence over includeArtifacts). | String[] |
+  excludeArtifacts |                       | Artifacts to be excluded (takes precedence over includeArtifacts). | String[] |
 *------------------+-----------------------+------------------------+-----------+------------------------+
-  excludeArtifactsRegExp |                           | Regular expression to match against artifacts to be excluded (takes precedence over includeArtifacts). Applies the expressions to "groupId:artifactId:classifier" | String[] |
+  excludeArtifactsRegExp |                 | Regular expression to match against artifacts to be excluded (takes precedence over includeArtifacts). Applies the expressions to "groupId:artifactId:classifier" | String[] |
 *------------------+-----------------------+------------------------+-----------+------------------------+
-  excludeAllArtifacts |                        | Exclude all regular artifacts (attached artifacts are not affected) | Boolean | false
+  excludeAllArtifacts |                    | Exclude all regular artifacts (attached artifacts are not affected) | Boolean | false
 *------------------+-----------------------+------------------------+-----------+------------------------+
-  excludeAllDependencies |                     | Exclude all dependencies | Boolean | false
+  excludeAllDependencies |                 | Exclude all dependencies | Boolean | false
 *------------------+-----------------------+------------------------+-----------+------------------------+
-  includeAttachedArtifacts |                   | Include all attached artifacts. | Boolean | true
+  includeAttachedArtifacts |               | Include all attached artifacts. | Boolean | true
+*------------------+-----------------------+------------------------+-----------+------------------------+
+  includeScope     |                       | Scopes to be included (comma-separated list), empty string includes all scopes. | String | "compile".
+*------------------+-----------------------+------------------------+-----------+------------------------+
+  excludeScope     |                       | Scopes to be excluded (comma-separated list), empty string does not exclude any scopes. | String | Empty string.
 *------------------+-----------------------+------------------------+-----------+------------------------+
   libDirectory     |                       | The directory to contain the libraries. Placeholder <<<{PKGNAME}>>> gets replaced with value of <<<packageName>>>. | String | /usr/lib/\{PKGNAME\}
 *------------------+-----------------------+------------------------+-----------+------------------------+
@@ -86,13 +90,13 @@ Usage
 *------------------+-----------------------+------------------------+-----------+------------------------+
   createSymLinks   |                       | Whether to create symbolic links for jars without the artifact version. | boolean | true
 *------------------+-----------------------+------------------------+-----------+------------------------+
-  createIncludeFiles |                       | Whether to create .inc files for the artifacts. | boolean | true
+  createIncludeFiles |                     | Whether to create .inc files for the artifacts. | boolean | true
 *------------------+-----------------------+------------------------+-----------+------------------------+
-  useDefaultFixPermissions |                       | Whether to use default rules for fixing file permissions (setting 755 on scripts in <<<bin>>> and <<<sbin>>> and <<<pre>>> and <<<post>>> scripts in <<<DEBIAN>>>). | boolean | false
+  useDefaultFixPermissions |               | Whether to use default rules for fixing file permissions (setting 755 on scripts in <<<bin>>> and <<<sbin>>> and <<<pre>>> and <<<post>>> scripts in <<<DEBIAN>>>). | boolean | false
 *------------------+-----------------------+------------------------+-----------+------------------------+
   fixPermissions   |                       | Custom rules for applying permissions to files, using nested <<<fixPermission>>> with <<<include>>> regular expression (eg <<<.*myscript.*>>>) and <<<permissions>>> POSIX permissions string (eg <<<rwxr-xr-x>>>). | FixPermission[] | false
 *------------------+-----------------------+------------------------+-----------+------------------------+
-  useDefaultCopyResources |                       | Whether to use default rules for copy resource files (from <<<src/deb/resources>>> to <<<target/deb>>>). | boolean | false
+  useDefaultCopyResources |                | Whether to use default rules for copy resource files (from <<<src/deb/resources>>> to <<<target/deb>>>). | boolean | false
 *------------------+-----------------------+------------------------+-----------+------------------------+
   copyResources    |                       | Custom rules for copying resources, using nested <<<copyResource>>> with <<<include>>> regular expression (eg <<<.*myscript.*>>>) and <<<source>>> and <<<target>>> strings (dir or file). | CopyResource[] | false
 *------------------+-----------------------+------------------------+-----------+------------------------+
@@ -100,11 +104,11 @@ Usage
 *------------------+-----------------------+------------------------+-----------+------------------------+
   repository       | deb.repository.location | Location of the Debian repository | File |
 *------------------+-----------------------+------------------------+-----------+------------------------+
-  codenames        |                           | The codenames of the distribution branches (e.g., lenny, natty, etc.) | String | experimental
+  codenames        |                       | The codenames of the distribution branches (e.g., lenny, natty, etc.) | String | experimental
 *------------------+-----------------------+------------------------+-----------+------------------------+
   repreproConfigurotionDir | deb.reprepro.config | Reprepro configuration directory | File |
 *------------------+-----------------------+------------------------+-----------+------------------------+
-  skipDeployMissing| deb.deploy.skipMissing    | Skip package deployment if the package does not exist | Boolean | true
+  skipDeployMissing| deb.deploy.skipMissing | Skip package deployment if the package does not exist | Boolean | true
 *------------------+-----------------------+------------------------+-----------+------------------------+
 
 ** Skipping execution

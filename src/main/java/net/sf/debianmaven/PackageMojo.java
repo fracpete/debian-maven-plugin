@@ -206,6 +206,21 @@ public class PackageMojo extends AbstractDebianMojo
 	protected FileFiltering fileFiltering;
 
 	/**
+	 * @parameter default-value="compile"
+	 * @since 1.0.19
+	 */
+	protected String includeScope;
+
+	protected Set<String> includedScopes;
+
+	/**
+	 * @since 1.0.19
+	 */
+	protected String excludeScope;
+
+	protected Set<String> excludedScopes;
+
+	/**
 	 * The Maven project object
 	 * 
 	 * @parameter expression="${project}"
@@ -411,6 +426,52 @@ public class PackageMojo extends AbstractDebianMojo
 		return excludeArtifactsPattern;
 	}
 
+	/**
+	 * Turns the comma-separated list of scopes into a set. empty set means all are included.
+	 * @return the set of included scopes
+	 */
+	private Set<String> getIncludedScopes() {
+		if (includedScopes == null)
+		{
+			includedScopes = new HashSet<>();
+			if ((includeScope != null) && !includeScope.isEmpty())
+			{
+				if (includeScope.contains(","))
+				{
+					includedScopes.addAll(Arrays.asList(includeScope.split(",")));
+				}
+				else
+				{
+					includedScopes.add(includeScope);
+				}
+			}
+		}
+		return includedScopes;
+	}
+
+	/**
+	 * Turns the comma-separated list of scopes into a set. empty set means none are excluded.
+	 * @return the set of excluded scopes
+	 */
+	private Set<String> getExcludedScopes() {
+		if (excludedScopes == null)
+		{
+			excludedScopes = new HashSet<>();
+			if ((excludeScope != null) && !excludeScope.isEmpty())
+			{
+				if (excludeScope.contains(","))
+				{
+					excludedScopes.addAll(Arrays.asList(excludeScope.split(",")));
+				}
+				else
+				{
+					excludedScopes.add(excludeScope);
+				}
+			}
+		}
+		return excludedScopes;
+	}
+
 	private boolean includeArtifact(Artifact a)
 	{
 		boolean doExclude = excludeArtifacts != null && (a.getDependencyTrail() == null || Collections.disjoint(a.getDependencyTrail(), excludeArtifacts));
@@ -427,6 +488,17 @@ public class PackageMojo extends AbstractDebianMojo
 				}
 			}
 		}
+
+		if (!getIncludedScopes().isEmpty() && !getIncludedScopes().contains(a.getScope()))
+		{
+			doExclude = true;
+		}
+
+		if (!getExcludedScopes().isEmpty() && getExcludedScopes().contains(a.getScope()))
+		{
+			doExclude = true;
+		}
+
 		if (doExclude)
 			return false;
 
