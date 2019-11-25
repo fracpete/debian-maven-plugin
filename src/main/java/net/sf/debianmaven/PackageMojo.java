@@ -474,10 +474,10 @@ public class PackageMojo extends AbstractDebianMojo
 
 	private boolean includeArtifact(Artifact a)
 	{
+		String aStr = a.getGroupId() + ":" + a.getArtifactId() + ":" + (a.hasClassifier() ? a.getClassifier() : "");
 		boolean doExclude = excludeArtifacts != null && (a.getDependencyTrail() == null || Collections.disjoint(a.getDependencyTrail(), excludeArtifacts));
 		if (!doExclude && (getExcludeArtifactsPattern().size() > 0))
 		{
-			String aStr = a.getGroupId() + ":" + a.getArtifactId() + ":" + (a.hasClassifier() ? a.getClassifier() : "");
 			for (Pattern p: getExcludeArtifactsPattern())
 			{
 				if (p.matcher(aStr).matches())
@@ -489,14 +489,19 @@ public class PackageMojo extends AbstractDebianMojo
 			}
 		}
 
-		if (!getIncludedScopes().isEmpty() && !getIncludedScopes().contains(a.getScope()))
+		if (a.getScope() != null)
 		{
-			doExclude = true;
-		}
+			if (!getIncludedScopes().isEmpty() && !getIncludedScopes().contains(a.getScope()))
+			{
+				getLog().debug(aStr + " (" + a.getScope() + ") not part of included scopes: " + getIncludedScopes());
+				doExclude = true;
+			}
 
-		if (!getExcludedScopes().isEmpty() && getExcludedScopes().contains(a.getScope()))
-		{
-			doExclude = true;
+			if (!getExcludedScopes().isEmpty() && getExcludedScopes().contains(a.getScope()))
+			{
+				getLog().debug(aStr + " (" + a.getScope() + ") part of excluded scopes: " + getExcludedScopes());
+				doExclude = true;
+			}
 		}
 
 		if (doExclude)

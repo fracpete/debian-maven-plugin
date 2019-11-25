@@ -4,6 +4,14 @@
 
 Changelog
 
+* 1.0.20
+
+      * the current artifact now gets included as well: this artifact's scope
+        is <<<null>>> and was therefore excluded since the set generated from
+        <<<includedScope>>> does not contain <<<null>>>.
+
+      []
+
 * 1.0.19
 
       * added <<<includeScope>>> and <<<excludeScope>>> properties to fine-tune
