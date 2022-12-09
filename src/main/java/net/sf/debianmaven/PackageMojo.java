@@ -221,6 +221,12 @@ public class PackageMojo extends AbstractDebianMojo
 	protected Set<String> excludedScopes;
 
 	/**
+	 * @parameter default-value="xz"
+	 * @since 1.0.21
+	 */
+	protected String compressionType;
+
+	/**
 	 * The Maven project object
 	 * 
 	 * @parameter expression="${project}"
@@ -470,6 +476,10 @@ public class PackageMojo extends AbstractDebianMojo
 			}
 		}
 		return excludedScopes;
+	}
+
+	private String getCompressionType() {
+		return compressionType == null? "xz" : compressionType;
 	}
 
 	private boolean includeArtifact(Artifact a)
@@ -865,7 +875,7 @@ public class PackageMojo extends AbstractDebianMojo
 
 	private void generatePackage() throws IOException, MojoExecutionException
 	{
-		runProcess(new String[]{"fakeroot", "--", "dpkg-deb", "--build", stageDir.toString(), getPackageFile().toString()}, true);
+		runProcess(new String[]{"fakeroot", "--", "dpkg-deb", "-Z", getCompressionType(), "--build", stageDir.toString(), getPackageFile().toString()}, true);
 	}
 
 	private void checkDeprecated(boolean haveParameter, String paramName) throws MojoExecutionException
