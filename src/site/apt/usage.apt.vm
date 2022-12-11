@@ -102,6 +102,8 @@ Usage
 *------------------+-----------------------+------------------------+-----------+------------------------+
   fileFiltering    |                       | If enabled, allows replacing of variables ("$\{...\}") in files that match the <<<include>>> (default: .*) but not the <<<exclude>>> (default: .*\\.(jpg\|jpeg\|png\|svg\|zip\|jar\|pdf)) pattern. | FileFiltering | disabled
 *------------------+-----------------------+------------------------+-----------+------------------------+
+  compressionType  |                       | The type of compression to use (gz, xz, etc.) | String | xz
+*------------------+-----------------------+------------------------+-----------+------------------------+
   repository       | deb.repository.location | Location of the Debian repository | File |
 *------------------+-----------------------+------------------------+-----------+------------------------+
   codenames        |                       | The codenames of the distribution branches (e.g., lenny, natty, etc.) | String | experimental
