@@ -2,6 +2,8 @@
 
 * Add entry to changelog in [changelog.apt.vm](src/site/apt/changelog.apt.vm)
 
+* Switch to Java 8
+
 * Run the following command to deploy the artifacts:
 
   ```
@@ -9,6 +11,13 @@
   ```
 
 * Push all changes
+
+  ```
+  git checkout gh-pages
+  git pull
+  git checkout master
+  git push
+  ```
 
 * Change the version in `pom.xml` to the just released one 
 
@@ -21,8 +30,14 @@
   cd ../debian-maven-plugin.gh-pages/
   git pull
   git commit -a -m updated
+  git checkout master
+  git pull
+  git checkout gh-pages
   git push
   cd ../debian-maven-plugin
   git checkout pom.xml
   git pull
+  git checkout gh-pages
+  git pull
+  git checkout master
   ```
