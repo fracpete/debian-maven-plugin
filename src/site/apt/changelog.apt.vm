@@ -4,6 +4,14 @@
 
 Changelog
 
+* 1.0.21
+
+      * with <<<compressionType>>> the default compression type of <<<gz>>>
+        can be changed, e.g., to <<<xz>>>.
+        Thanks to Benjamin Reed for the contribution ({{https://github.com/fracpete/debian-maven-plugin/pull/5}}).
+
+      []
+
 * 1.0.20
 
       * the current artifact now gets included as well: this artifact's scope
