@@ -221,7 +221,7 @@ public class PackageMojo extends AbstractDebianMojo
 	protected Set<String> excludedScopes;
 
 	/**
-	 * @parameter default-value="xz"
+	 * @parameter default-value="gz"
 	 * @since 1.0.21
 	 */
 	protected String compressionType;
@@ -479,7 +479,7 @@ public class PackageMojo extends AbstractDebianMojo
 	}
 
 	private String getCompressionType() {
-		return compressionType == null? "xz" : compressionType;
+		return compressionType == null? "gz" : compressionType;
 	}
 
 	private boolean includeArtifact(Artifact a)
