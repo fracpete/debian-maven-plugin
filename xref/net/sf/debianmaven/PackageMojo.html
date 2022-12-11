@@ -229,7 +229,7 @@
 <a class="jxr_linenumber" name="L221" href="#L221">221</a> 	<strong class="jxr_keyword">protected</strong> Set&lt;String&gt; excludedScopes;
 <a class="jxr_linenumber" name="L222" href="#L222">222</a> 
 <a class="jxr_linenumber" name="L223" href="#L223">223</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L224" href="#L224">224</a> <em class="jxr_javadoccomment">	 * @parameter default-value="gz"</em>
+<a class="jxr_linenumber" name="L224" href="#L224">224</a> <em class="jxr_javadoccomment">	 * @parameter default-value="gzip"</em>
 <a class="jxr_linenumber" name="L225" href="#L225">225</a> <em class="jxr_javadoccomment">	 * @since 1.0.21</em>
 <a class="jxr_linenumber" name="L226" href="#L226">226</a> <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="L227" href="#L227">227</a> 	<strong class="jxr_keyword">protected</strong> String compressionType;
@@ -487,7 +487,7 @@
 <a class="jxr_linenumber" name="L479" href="#L479">479</a> 	}
 <a class="jxr_linenumber" name="L480" href="#L480">480</a> 
 <a class="jxr_linenumber" name="L481" href="#L481">481</a> 	<strong class="jxr_keyword">private</strong> String getCompressionType() {
-<a class="jxr_linenumber" name="L482" href="#L482">482</a> 		<strong class="jxr_keyword">return</strong> compressionType == <strong class="jxr_keyword">null</strong>? <span class="jxr_string">"gz"</span> : compressionType;
+<a class="jxr_linenumber" name="L482" href="#L482">482</a> 		<strong class="jxr_keyword">return</strong> compressionType == <strong class="jxr_keyword">null</strong>? <span class="jxr_string">"gzip"</span> : compressionType;
 <a class="jxr_linenumber" name="L483" href="#L483">483</a> 	}
 <a class="jxr_linenumber" name="L484" href="#L484">484</a> 
 <a class="jxr_linenumber" name="L485" href="#L485">485</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> includeArtifact(Artifact a)
@@ -883,45 +883,57 @@
 <a class="jxr_linenumber" name="L875" href="#L875">875</a> 
 <a class="jxr_linenumber" name="L876" href="#L876">876</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> generatePackage() <strong class="jxr_keyword">throws</strong> IOException, MojoExecutionException
 <a class="jxr_linenumber" name="L877" href="#L877">877</a> 	{
-<a class="jxr_linenumber" name="L878" href="#L878">878</a> 		runProcess(<strong class="jxr_keyword">new</strong> String[]{<span class="jxr_string">"fakeroot"</span>, <span class="jxr_string">"--"</span>, <span class="jxr_string">"dpkg-deb"</span>, <span class="jxr_string">"-Z"</span>, getCompressionType(), <span class="jxr_string">"--build"</span>, stageDir.toString(), getPackageFile().toString()}, <strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L879" href="#L879">879</a> 	}
-<a class="jxr_linenumber" name="L880" href="#L880">880</a> 
-<a class="jxr_linenumber" name="L881" href="#L881">881</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> checkDeprecated(<strong class="jxr_keyword">boolean</strong> haveParameter, String paramName) <strong class="jxr_keyword">throws</strong> MojoExecutionException
-<a class="jxr_linenumber" name="L882" href="#L882">882</a> 	{
-<a class="jxr_linenumber" name="L883" href="#L883">883</a> 		<strong class="jxr_keyword">if</strong> (haveParameter)
-<a class="jxr_linenumber" name="L884" href="#L884">884</a> 			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException(<span class="jxr_string">"Deprecated parameter used: "</span>+paramName);
-<a class="jxr_linenumber" name="L885" href="#L885">885</a> 	}
-<a class="jxr_linenumber" name="L886" href="#L886">886</a> 
-<a class="jxr_linenumber" name="L887" href="#L887">887</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> executeDebMojo() <strong class="jxr_keyword">throws</strong> MojoExecutionException
-<a class="jxr_linenumber" name="L888" href="#L888">888</a> 	{
-<a class="jxr_linenumber" name="L889" href="#L889">889</a> 		checkDeprecated(includeJar != <strong class="jxr_keyword">null</strong>, <span class="jxr_string">"includeJar"</span>);
-<a class="jxr_linenumber" name="L890" href="#L890">890</a> 		checkDeprecated(includeJars != <strong class="jxr_keyword">null</strong> &amp;&amp; includeJars.length &gt; 0, <span class="jxr_string">"includeJars"</span>);
-<a class="jxr_linenumber" name="L891" href="#L891">891</a> 		checkDeprecated(excludeAllJars != <strong class="jxr_keyword">null</strong>, <span class="jxr_string">"excludeAllJars"</span>);
+<a class="jxr_linenumber" name="L878" href="#L878">878</a> 		List&lt;String&gt; args = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
+<a class="jxr_linenumber" name="L879" href="#L879">879</a> 		args.add(<span class="jxr_string">"fakeroot"</span>);
+<a class="jxr_linenumber" name="L880" href="#L880">880</a> 		args.add(<span class="jxr_string">"--"</span>);
+<a class="jxr_linenumber" name="L881" href="#L881">881</a> 		args.add(<span class="jxr_string">"dpkg-deb"</span>);
+<a class="jxr_linenumber" name="L882" href="#L882">882</a> 		<strong class="jxr_keyword">if</strong> (!getCompressionType().equals(<span class="jxr_string">"sysdefault"</span>))
+<a class="jxr_linenumber" name="L883" href="#L883">883</a> 		{
+<a class="jxr_linenumber" name="L884" href="#L884">884</a> 			args.add(<span class="jxr_string">"-Z"</span>);
+<a class="jxr_linenumber" name="L885" href="#L885">885</a> 			args.add(getCompressionType());
+<a class="jxr_linenumber" name="L886" href="#L886">886</a> 		}
+<a class="jxr_linenumber" name="L887" href="#L887">887</a> 		args.add(<span class="jxr_string">"--build"</span>);
+<a class="jxr_linenumber" name="L888" href="#L888">888</a> 		args.add(stageDir.toString());
+<a class="jxr_linenumber" name="L889" href="#L889">889</a> 		args.add(getPackageFile().toString());
+<a class="jxr_linenumber" name="L890" href="#L890">890</a> 		runProcess(args.toArray(<strong class="jxr_keyword">new</strong> String[0]), <strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L891" href="#L891">891</a> 	}
 <a class="jxr_linenumber" name="L892" href="#L892">892</a> 
-<a class="jxr_linenumber" name="L893" href="#L893">893</a> 		File targetDebDir = <strong class="jxr_keyword">new</strong> File(stageDir, <span class="jxr_string">"DEBIAN"</span>);
-<a class="jxr_linenumber" name="L894" href="#L894">894</a> 		<strong class="jxr_keyword">if</strong> (!targetDebDir.exists() &amp;&amp; !targetDebDir.mkdirs())
-<a class="jxr_linenumber" name="L895" href="#L895">895</a> 			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException(<span class="jxr_string">"Unable to create directory: "</span>+targetDebDir);
-<a class="jxr_linenumber" name="L896" href="#L896">896</a> 
-<a class="jxr_linenumber" name="L897" href="#L897">897</a> 		<strong class="jxr_keyword">try</strong>
-<a class="jxr_linenumber" name="L898" href="#L898">898</a> 		{
-<a class="jxr_linenumber" name="L899" href="#L899">899</a> 			generateManPages();
-<a class="jxr_linenumber" name="L900" href="#L900">900</a> 			copyAttachedArtifacts();
-<a class="jxr_linenumber" name="L901" href="#L901">901</a> 			copyArtifacts();
-<a class="jxr_linenumber" name="L902" href="#L902">902</a> 			generateCopyright();
-<a class="jxr_linenumber" name="L903" href="#L903">903</a> 			copyResources();
-<a class="jxr_linenumber" name="L904" href="#L904">904</a> 			applyFixPermissions();
-<a class="jxr_linenumber" name="L905" href="#L905">905</a> 			generateConffiles(<strong class="jxr_keyword">new</strong> File(targetDebDir, <span class="jxr_string">"conffiles"</span>));
-<a class="jxr_linenumber" name="L906" href="#L906">906</a> 			generateControl(<strong class="jxr_keyword">new</strong> File(targetDebDir, <span class="jxr_string">"control"</span>));
-<a class="jxr_linenumber" name="L907" href="#L907">907</a> 			generateMd5Sums(<strong class="jxr_keyword">new</strong> File(targetDebDir, <span class="jxr_string">"md5sums"</span>));
-<a class="jxr_linenumber" name="L908" href="#L908">908</a> 			generatePackage();
-<a class="jxr_linenumber" name="L909" href="#L909">909</a> 		}
-<a class="jxr_linenumber" name="L910" href="#L910">910</a> 		<strong class="jxr_keyword">catch</strong> (IOException e)
-<a class="jxr_linenumber" name="L911" href="#L911">911</a> 		{
-<a class="jxr_linenumber" name="L912" href="#L912">912</a> 			getLog().error(e.toString());
-<a class="jxr_linenumber" name="L913" href="#L913">913</a> 			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException(e.getMessage(), e);
-<a class="jxr_linenumber" name="L914" href="#L914">914</a> 		}
-<a class="jxr_linenumber" name="L915" href="#L915">915</a> 	}
-<a class="jxr_linenumber" name="L916" href="#L916">916</a> }
+<a class="jxr_linenumber" name="L893" href="#L893">893</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> checkDeprecated(<strong class="jxr_keyword">boolean</strong> haveParameter, String paramName) <strong class="jxr_keyword">throws</strong> MojoExecutionException
+<a class="jxr_linenumber" name="L894" href="#L894">894</a> 	{
+<a class="jxr_linenumber" name="L895" href="#L895">895</a> 		<strong class="jxr_keyword">if</strong> (haveParameter)
+<a class="jxr_linenumber" name="L896" href="#L896">896</a> 			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException(<span class="jxr_string">"Deprecated parameter used: "</span>+paramName);
+<a class="jxr_linenumber" name="L897" href="#L897">897</a> 	}
+<a class="jxr_linenumber" name="L898" href="#L898">898</a> 
+<a class="jxr_linenumber" name="L899" href="#L899">899</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> executeDebMojo() <strong class="jxr_keyword">throws</strong> MojoExecutionException
+<a class="jxr_linenumber" name="L900" href="#L900">900</a> 	{
+<a class="jxr_linenumber" name="L901" href="#L901">901</a> 		checkDeprecated(includeJar != <strong class="jxr_keyword">null</strong>, <span class="jxr_string">"includeJar"</span>);
+<a class="jxr_linenumber" name="L902" href="#L902">902</a> 		checkDeprecated(includeJars != <strong class="jxr_keyword">null</strong> &amp;&amp; includeJars.length &gt; 0, <span class="jxr_string">"includeJars"</span>);
+<a class="jxr_linenumber" name="L903" href="#L903">903</a> 		checkDeprecated(excludeAllJars != <strong class="jxr_keyword">null</strong>, <span class="jxr_string">"excludeAllJars"</span>);
+<a class="jxr_linenumber" name="L904" href="#L904">904</a> 
+<a class="jxr_linenumber" name="L905" href="#L905">905</a> 		File targetDebDir = <strong class="jxr_keyword">new</strong> File(stageDir, <span class="jxr_string">"DEBIAN"</span>);
+<a class="jxr_linenumber" name="L906" href="#L906">906</a> 		<strong class="jxr_keyword">if</strong> (!targetDebDir.exists() &amp;&amp; !targetDebDir.mkdirs())
+<a class="jxr_linenumber" name="L907" href="#L907">907</a> 			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException(<span class="jxr_string">"Unable to create directory: "</span>+targetDebDir);
+<a class="jxr_linenumber" name="L908" href="#L908">908</a> 
+<a class="jxr_linenumber" name="L909" href="#L909">909</a> 		<strong class="jxr_keyword">try</strong>
+<a class="jxr_linenumber" name="L910" href="#L910">910</a> 		{
+<a class="jxr_linenumber" name="L911" href="#L911">911</a> 			generateManPages();
+<a class="jxr_linenumber" name="L912" href="#L912">912</a> 			copyAttachedArtifacts();
+<a class="jxr_linenumber" name="L913" href="#L913">913</a> 			copyArtifacts();
+<a class="jxr_linenumber" name="L914" href="#L914">914</a> 			generateCopyright();
+<a class="jxr_linenumber" name="L915" href="#L915">915</a> 			copyResources();
+<a class="jxr_linenumber" name="L916" href="#L916">916</a> 			applyFixPermissions();
+<a class="jxr_linenumber" name="L917" href="#L917">917</a> 			generateConffiles(<strong class="jxr_keyword">new</strong> File(targetDebDir, <span class="jxr_string">"conffiles"</span>));
+<a class="jxr_linenumber" name="L918" href="#L918">918</a> 			generateControl(<strong class="jxr_keyword">new</strong> File(targetDebDir, <span class="jxr_string">"control"</span>));
+<a class="jxr_linenumber" name="L919" href="#L919">919</a> 			generateMd5Sums(<strong class="jxr_keyword">new</strong> File(targetDebDir, <span class="jxr_string">"md5sums"</span>));
+<a class="jxr_linenumber" name="L920" href="#L920">920</a> 			generatePackage();
+<a class="jxr_linenumber" name="L921" href="#L921">921</a> 		}
+<a class="jxr_linenumber" name="L922" href="#L922">922</a> 		<strong class="jxr_keyword">catch</strong> (IOException e)
+<a class="jxr_linenumber" name="L923" href="#L923">923</a> 		{
+<a class="jxr_linenumber" name="L924" href="#L924">924</a> 			getLog().error(e.toString());
+<a class="jxr_linenumber" name="L925" href="#L925">925</a> 			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MojoExecutionException(e.getMessage(), e);
+<a class="jxr_linenumber" name="L926" href="#L926">926</a> 		}
+<a class="jxr_linenumber" name="L927" href="#L927">927</a> 	}
+<a class="jxr_linenumber" name="L928" href="#L928">928</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2012&#x2013;2022. All rights reserved.</div>
