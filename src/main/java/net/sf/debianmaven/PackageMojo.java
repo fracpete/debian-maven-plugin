@@ -221,7 +221,7 @@ public class PackageMojo extends AbstractDebianMojo
 	protected Set<String> excludedScopes;
 
 	/**
-	 * @parameter default-value="gz"
+	 * @parameter default-value="gzip"
 	 * @since 1.0.21
 	 */
 	protected String compressionType;
@@ -479,7 +479,7 @@ public class PackageMojo extends AbstractDebianMojo
 	}
 
 	private String getCompressionType() {
-		return compressionType == null? "gz" : compressionType;
+		return compressionType == null? "gzip" : compressionType;
 	}
 
 	private boolean includeArtifact(Artifact a)
@@ -875,7 +875,19 @@ public class PackageMojo extends AbstractDebianMojo
 
 	private void generatePackage() throws IOException, MojoExecutionException
 	{
-		runProcess(new String[]{"fakeroot", "--", "dpkg-deb", "-Z", getCompressionType(), "--build", stageDir.toString(), getPackageFile().toString()}, true);
+		List<String> args = new ArrayList<>();
+		args.add("fakeroot");
+		args.add("--");
+		args.add("dpkg-deb");
+		if (!getCompressionType().equals("sysdefault"))
+		{
+			args.add("-Z");
+			args.add(getCompressionType());
+		}
+		args.add("--build");
+		args.add(stageDir.toString());
+		args.add(getPackageFile().toString());
+		runProcess(args.toArray(new String[0]), true);
 	}
 
 	private void checkDeprecated(boolean haveParameter, String paramName) throws MojoExecutionException

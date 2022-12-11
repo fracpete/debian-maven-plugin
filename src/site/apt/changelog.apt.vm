@@ -4,6 +4,13 @@
 
 Changelog
 
+* 1.0.22
+
+      * default <<<compressionType>>> is now <<<gzip>>> (not <<<gz>>>). Added <<<sysdefault>>> to use whatever
+        the underlying build system uses as default.
+
+      []
+
 * 1.0.21
 
       * with <<<compressionType>>> the default compression type of <<<gz>>>
