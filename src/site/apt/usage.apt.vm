@@ -104,6 +104,8 @@ Usage
 *------------------+-----------------------+------------------------+-----------+------------------------+
   compressionType  |                       | The type of compression to use (sysdefault, gzip, xz, etc.). "sysdefault" uses the default compression used by the underlying build system. | String | gzip
 *------------------+-----------------------+------------------------+-----------+------------------------+
+  attach           |                       | Whether to attach the built package to the project | boolean | false
+*------------------+-----------------------+------------------------+-----------+------------------------+
   repository       | deb.repository.location | Location of the Debian repository | File |
 *------------------+-----------------------+------------------------+-----------+------------------------+
   codenames        |                       | The codenames of the distribution branches (e.g., lenny, natty, etc.) | String | experimental

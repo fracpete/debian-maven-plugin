@@ -14,6 +14,7 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.License;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.project.MavenProjectHelper;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -227,11 +228,22 @@ public class PackageMojo extends AbstractDebianMojo
 	protected String compressionType;
 
 	/**
+	 * @parameter default-value="false"
+	 * @since 1.0.23
+	 */
+	protected boolean attach;
+
+	/**
 	 * The Maven project object
 	 * 
 	 * @parameter expression="${project}"
 	 */
 	private MavenProject project;
+
+	/**
+	 * @component
+	 */
+	private MavenProjectHelper projectHelper;
 
 	/**
 	 * Strips leading and trailing slashes and dots from the path.
@@ -918,11 +930,20 @@ public class PackageMojo extends AbstractDebianMojo
 			generateControl(new File(targetDebDir, "control"));
 			generateMd5Sums(new File(targetDebDir, "md5sums"));
 			generatePackage();
+			attachPackage();
 		}
 		catch (IOException e)
 		{
 			getLog().error(e.toString());
 			throw new MojoExecutionException(e.getMessage(), e);
+		}
+	}
+
+	private void attachPackage()
+	{
+		if(attach)
+		{
+			projectHelper.attachArtifact(project, "deb", getPackageFile());
 		}
 	}
 }
