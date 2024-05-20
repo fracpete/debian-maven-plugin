@@ -6,8 +6,8 @@ import net.sf.debianmaven.utils.FileCopy;
 import net.sf.debianmaven.utils.FilteredFileCopy;
 import net.sf.debianmaven.utils.IOUtils;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.collections4.MultiMap;
-import org.apache.commons.collections4.map.MultiValueMap;
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.artifact.Artifact;
@@ -601,7 +601,7 @@ public class PackageMojo extends AbstractDebianMojo
 		for (Artifact a : artifacts)
 			ids.put(a.getId(), a);
 
-		MultiMap deps = new MultiValueMap();
+		MultiValuedMap<Artifact,String> deps = new ArrayListValuedHashMap<>();
 		for (Artifact a : artifacts)
 		{
 			if (includeArtifact(a))
@@ -623,7 +623,7 @@ public class PackageMojo extends AbstractDebianMojo
 		for (Artifact a : artifacts)
 		{
 			if (includeArtifact(a) && createIncludeFiles)
-				writeIncludeFile(targetLibDir, a.getArtifactId(), a.getVersion(), (List) deps.get(a));
+				writeIncludeFile(targetLibDir, a.getArtifactId(), a.getVersion(), deps.get(a));
 		}
 	}
 
