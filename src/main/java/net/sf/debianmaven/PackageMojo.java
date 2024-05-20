@@ -1,13 +1,13 @@
 package net.sf.debianmaven;
 
 import com.github.fracpete.processoutput4j.output.CollectingProcessOutput;
-import net.sf.debianmaven.utils.FilteredFileCopy;
-import net.sf.debianmaven.utils.IOUtils;
 import net.sf.debianmaven.utils.DefaultFileCopy;
 import net.sf.debianmaven.utils.FileCopy;
+import net.sf.debianmaven.utils.FilteredFileCopy;
+import net.sf.debianmaven.utils.IOUtils;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.collections15.MultiMap;
-import org.apache.commons.collections15.multimap.MultiHashMap;
+import org.apache.commons.collections.MultiMap;
+import org.apache.commons.collections.map.MultiValueMap;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.artifact.Artifact;
@@ -16,29 +16,14 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.io.*;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPOutputStream;
 
 /**
  * Generates a Debian package.
- *
+ * <br>
  * Uses Debian utilities: <a href="http://www.debian.org/doc/manuals/debian-faq/ch-pkgtools.en.html">dpkg-deb</a> and fakeroot.
  *
  * @goal package
@@ -498,7 +483,7 @@ public class PackageMojo extends AbstractDebianMojo
 	{
 		String aStr = a.getGroupId() + ":" + a.getArtifactId() + ":" + (a.hasClassifier() ? a.getClassifier() : "");
 		boolean doExclude = excludeArtifacts != null && (a.getDependencyTrail() == null || Collections.disjoint(a.getDependencyTrail(), excludeArtifacts));
-		if (!doExclude && (getExcludeArtifactsPattern().size() > 0))
+		if (!doExclude && !getExcludeArtifactsPattern().isEmpty())
 		{
 			for (Pattern p: getExcludeArtifactsPattern())
 			{
@@ -616,7 +601,7 @@ public class PackageMojo extends AbstractDebianMojo
 		for (Artifact a : artifacts)
 			ids.put(a.getId(), a);
 
-		MultiMap<Artifact,String> deps = new MultiHashMap<>();
+		MultiMap deps = new MultiValueMap();
 		for (Artifact a : artifacts)
 		{
 			if (includeArtifact(a))
@@ -638,7 +623,7 @@ public class PackageMojo extends AbstractDebianMojo
 		for (Artifact a : artifacts)
 		{
 			if (includeArtifact(a) && createIncludeFiles)
-				writeIncludeFile(targetLibDir, a.getArtifactId(), a.getVersion(), deps.get(a));
+				writeIncludeFile(targetLibDir, a.getArtifactId(), a.getVersion(), (List) deps.get(a));
 		}
 	}
 
@@ -710,7 +695,7 @@ public class PackageMojo extends AbstractDebianMojo
 	private void applyFixPermissions() throws IOException
 	{
 		List<FixPermission> active = getActiveFixPermissions();
-		if (active.size() != 0)
+		if (!active.isEmpty())
 			IOUtils.applyFixPermissions(getLog(), stageDir, active);
 	}
 
@@ -783,7 +768,7 @@ public class PackageMojo extends AbstractDebianMojo
 			}
 		}
 
-		if (conffiles.size() > 0)
+		if (!conffiles.isEmpty())
 		{
 			PrintWriter out = new PrintWriter(new FileWriter(target));
 			for (String fname : conffiles)

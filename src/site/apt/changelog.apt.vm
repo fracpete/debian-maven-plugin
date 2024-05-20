@@ -4,6 +4,13 @@
 
 Changelog
 
+* 1.0.23
+
+      * upgraded <<<commons-codec>>> to 1.13
+      * replaced <<<collections-generic>>> with <<<commons-collections>>>
+
+      []
+
 * 1.0.22
 
       * default <<<compressionType>>> is now <<<gzip>>> (not <<<gz>>>). Added <<<sysdefault>>> to use whatever

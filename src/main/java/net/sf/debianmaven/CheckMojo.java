@@ -6,7 +6,7 @@ import java.io.IOException;
 
 /**
  * Checks whether the generated package complies to style rules.
- *
+ * <br>
  * Uses external utility: <a href="http://lintian.debian.org/">lintian</a>.
  *
  * @goal check
