@@ -16,6 +16,8 @@ Changelog
 
       * added <<<attach>>> option to attach artifact (pull request #6 from kh31d4r/master)
 
+      []
+
 * 1.0.22
 
       * default <<<compressionType>>> is now <<<gzip>>> (not <<<gz>>>). Added <<<sysdefault>>> to use whatever
