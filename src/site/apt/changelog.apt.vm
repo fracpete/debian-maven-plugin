@@ -7,7 +7,9 @@ Changelog
 * 1.0.24
 
       * upgraded <<<commons-codec>>> to 1.13
+
       * replaced <<<collections-generic>>> with <<<commons-collections4>>>
+
       * <<<PackageMojo>>> now uses <<<org.apache.commons.collections4.MultiValuedMap>>>
 
       []
