@@ -4,13 +4,17 @@
 
 Changelog
 
-* 1.0.23
+* 1.0.24
 
       * upgraded <<<commons-codec>>> to 1.13
       * replaced <<<collections-generic>>> with <<<commons-collections4>>>
       * <<<PackageMojo>>> now uses <<<org.apache.commons.collections4.MultiValuedMap>>>
 
       []
+
+* 1.0.23
+
+      * added <<<attach>>> option to attach artifact (pull request #6 from kh31d4r/master)
 
 * 1.0.22
 
